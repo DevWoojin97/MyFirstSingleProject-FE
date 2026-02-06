@@ -1,47 +1,57 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './UpdatePost.module.css';
+import { getPostById, updatePost } from '@/api/postApi';
 
-export default function UpdatePost({ posts, setPosts }) {
+export default function UpdatePost() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState(() => {
-    const post = posts.find((p) => p.id === Number(id));
-    return post
-      ? { ...post }
-      : { title: '', nickname: '', password: '', content: '' };
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+    nickname: '', // 닉네임은 수정 못하게 막는 경우도 많지만 일단 포함
+    password: '', // 본인 확인용
   });
 
+  // 1. 기존 데이터 불러오기
   useEffect(() => {
-    if (!posts.some((p) => p.id === Number(id))) {
-      alert('해당 게시글을 찾을 수 없습니다.');
-      navigate('/');
-    }
-  }, [id, posts, navigate]);
+    const fetchPost = async () => {
+      try {
+        const data = await getPostById(id);
+        // 불러온 데이터로 폼 상태 업데이트
+        setFormData({
+          title: data.title,
+          content: data.content,
+          nickname: data.nickname,
+          password: '', // 비밀번호는 보안상 비워두고 새로 입력받음
+        });
+      } catch (err) {
+        alert('데이터를 불러오지 못했습니다.', err);
+        navigate('/');
+      }
+    };
+    fetchPost();
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!formData.title || !formData.content) {
-      alert('제목과 내용을 입력해주세요!');
-      return;
+    try {
+      await updatePost(id, formData);
+      alert('수정이 완료되었습니다.');
+      navigate(`/post/${id}`);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        alert('비밀번호가 일치하지 않습니다.');
+      } else {
+        alert('수정 중 오류가 발생했습니다.');
+      }
     }
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === Number(id) ? { ...post, ...formData } : post,
-      ),
-    );
-    alert('수정이 완료되었습니다.');
-    navigate(`/post/${id}`);
   };
 
   return (

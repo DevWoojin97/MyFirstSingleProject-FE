@@ -41,3 +41,13 @@ export const deletePost = async (id, password) => {
   });
   return response.data;
 };
+
+export const updatePost = async (id, postData) => {
+  try {
+    const response = await axios.patch(`${BASE_URL}/posts/${id}`, postData);
+    return response.data;
+  } catch (error) {
+    console.error('게시글 수정 에러:', error);
+    throw error;
+  }
+};
