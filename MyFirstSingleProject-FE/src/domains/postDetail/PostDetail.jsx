@@ -11,7 +11,7 @@ export default function PostDetail({ posts }) {
   };
 
   const handleEdit = () => {
-    navigate(`/post/edit/${id}`);
+    navigate(`/post/${id}/edit`);
   };
 
   // const handleDelete = () => {

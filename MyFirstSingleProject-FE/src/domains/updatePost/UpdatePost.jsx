@@ -1,54 +1,49 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './CreatePost.module.css';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import styles from './UpdatePost.module.css';
 
-export default function CreatePost({ setPosts }) {
+export default function UpdatePost({ posts, setPosts }) {
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    title: '',
-    nickname: '',
-    password: '',
-    content: '',
+  const [formData, setFormData] = useState(() => {
+    const post = posts.find((p) => p.id === Number(id));
+    return post
+      ? { ...post }
+      : { title: '', nickname: '', password: '', content: '' };
   });
+
+  useEffect(() => {
+    if (!posts.some((p) => p.id === Number(id))) {
+      alert('해당 게시글을 찾을 수 없습니다.');
+      navigate('/');
+    }
+  }, [id, posts, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault;
+    e.preventDefault();
 
     if (!formData.title || !formData.content) {
       alert('제목과 내용을 입력해주세요!');
       return;
     }
-
-    const newPost = {
-      id: Date.now(),
-      no: Date.now() % 10000,
-      ...formData,
-      createdAt: new Date().toLocaleDateString(),
-      view: 0,
-    };
-
-    setPosts((prevPosts) => {
-      const updated = [newPost, ...prevPosts];
-      console.log('업데이트 될 예정인 데이터:', updated);
-      return updated;
-    });
-
-    alert('게시글이 등록되었습니다.');
-    navigate('/');
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === Number(id) ? { ...post, ...formData } : post,
+      ),
+    );
+    alert('수정이 완료되었습니다.');
+    navigate(`/post/${id}`);
   };
 
-  const handleGoToList = () => {
-    navigate('/');
-  };
   return (
     <div className={styles.container}>
       <h2>게시글 작성</h2>
@@ -92,13 +87,13 @@ export default function CreatePost({ setPosts }) {
         <div className={styles.buttonGroup}>
           <button
             type="button"
-            onClick={handleGoToList}
+            onClick={() => navigate(-1)}
             className={styles.btnCancel}
           >
             취소
           </button>
           <button type="submit" className={styles.btnSubmit}>
-            등록
+            수정 완료
           </button>
         </div>
       </form>
