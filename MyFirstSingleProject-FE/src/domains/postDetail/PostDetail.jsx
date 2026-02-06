@@ -1,4 +1,4 @@
-import { getPostById } from '@/api/postApi';
+import { deletePost, getPostById } from '@/api/postApi';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -30,9 +30,27 @@ export default function PostDetail() {
     navigate(`/post/${id}/edit`);
   };
 
-  // const handleDelete = () => {
-  //   const password
-  // }
+  const handleDelete = async () => {
+    const password = window.prompt('비밀번호를 입력하세요.');
+
+    if (password === null) return; // 취소 누른 경우
+    if (password.trim() === '') {
+      alert('비밀번호를 입력해주세요.');
+      return;
+    }
+
+    try {
+      await deletePost(id, password);
+      alert('성공적으로 삭제되었습니다.');
+      navigate('/'); // 삭제 후 목록으로 이동
+    } catch (err) {
+      if (err.response?.status === 401) {
+        alert('비밀번호가 일치하지 않습니다.');
+      } else {
+        alert('삭제 중 오류가 발생했습니다.');
+      }
+    }
+  };
 
   if (!post) {
     return <div>존재하지 않는 게시글입니다.</div>;
@@ -66,7 +84,7 @@ export default function PostDetail() {
       <div>
         <button onClick={handleGoToList}>목록으로</button>
         <button onClick={handleEdit}> 수정</button>
-        <button>삭제</button>
+        <button onClick={handleDelete}>삭제</button>
       </div>
     </div>
   );

@@ -33,3 +33,11 @@ export const createPost = async (postData) => {
     throw error;
   }
 };
+
+// 게시글 삭제
+export const deletePost = async (id, password) => {
+  const response = await axios.delete(`${BASE_URL}/posts/${id}`, {
+    data: { password },
+  });
+  return response.data;
+};
