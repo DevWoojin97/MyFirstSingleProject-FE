@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './CreatePost.module.css';
+import { createPost } from '@/api/postApi';
 
-export default function CreatePost({ setPosts }) {
+export default function CreatePost() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -20,32 +21,22 @@ export default function CreatePost({ setPosts }) {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     if (!formData.title || !formData.content) {
       alert('제목과 내용을 입력해주세요!');
       return;
     }
-
-    const newPost = {
-      id: Date.now(),
-      no: Date.now() % 10000,
-      ...formData,
-      createdAt: new Date().toLocaleDateString(),
-      view: 0,
-    };
-
-    setPosts((prevPosts) => {
-      const updated = [newPost, ...prevPosts];
-      console.log('업데이트 될 예정인 데이터:', updated);
-      return updated;
-    });
-
-    alert('게시글이 등록되었습니다.');
-    navigate('/');
+    try {
+      await createPost(formData);
+      alert('게시글이 등록되었습니다.');
+      navigate('/');
+    } catch (error) {
+      console.error('등록 실패:', error);
+      alert('서버 오류로 등록에 실패했습니다.');
+    }
   };
-
   const handleGoToList = () => {
     navigate('/');
   };

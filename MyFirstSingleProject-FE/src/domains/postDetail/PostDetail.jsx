@@ -1,10 +1,26 @@
+import { getPostById } from '@/api/postApi';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-export default function PostDetail({ posts }) {
+export default function PostDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const post = posts.find((p) => p.id === parseInt(id));
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const data = await getPostById(id);
+        setPost(data);
+      } catch (error) {
+        console.error('데이터 로드 실패', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPost();
+  }, [id]);
 
   const handleGoToList = () => {
     navigate('/');
@@ -36,7 +52,8 @@ export default function PostDetail({ posts }) {
           작성자: <strong>{post.nickname}</strong>
         </span>
         <span>
-          작성일: {post.createdAt} | 조회수: {post.views}
+          작성일:{new Date(post.createdAt).toLocaleDateString()} | 조회수:
+          {post.view}
         </span>
       </div>
 
