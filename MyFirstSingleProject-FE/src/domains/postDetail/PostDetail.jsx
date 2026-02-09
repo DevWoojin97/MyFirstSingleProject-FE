@@ -1,12 +1,16 @@
-import { deletePost, getPostById } from '@/api/postApi';
+import { deletePost, getPostById, updatePost } from '@/api/postApi';
+import PasswordModal from '@/components/PasswordModal/PasswordModal';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function PostDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -26,29 +30,39 @@ export default function PostDetail() {
     navigate('/');
   };
 
-  const handleEdit = () => {
-    navigate(`/post/${id}/edit`);
+  const handleEditClick = () => {
+    setIsEditModalOpen(true);
   };
 
-  const handleDelete = async () => {
-    const password = window.prompt('비밀번호를 입력하세요.');
+  const handleActualEdit = async (password) => {
+    try {
+      await updatePost(id, password);
 
-    if (password === null) return; // 취소 누른 경우
-    if (password.trim() === '') {
-      alert('비밀번호를 입력해주세요.');
-      return;
+      setIsEditModalOpen(false);
+      navigate(`/post/${id}/edit`, { state: { password } });
+    } catch (error) {
+      toast.error('비밀번호가 일치하지 않습니다. 🙅');
+      throw new Error(
+        error.response?.data?.message || '비밀번호가 일치하지 않습니다.',
+      );
     }
+  };
 
+  const handleDeleteClick = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleActualDelete = async (password) => {
     try {
       await deletePost(id, password);
-      alert('성공적으로 삭제되었습니다.');
-      navigate('/'); // 삭제 후 목록으로 이동
-    } catch (err) {
-      if (err.response?.status === 401) {
-        alert('비밀번호가 일치하지 않습니다.');
-      } else {
-        alert('삭제 중 오류가 발생했습니다.');
-      }
+
+      setIsDeleteModalOpen(false);
+      toast.success('성공적으로 삭제되었습니다.');
+      navigate('/');
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || '비밀번호가 일치하지 않습니다.',
+      );
     }
   };
 
@@ -83,9 +97,25 @@ export default function PostDetail() {
 
       <div>
         <button onClick={handleGoToList}>목록으로</button>
-        <button onClick={handleEdit}> 수정</button>
-        <button onClick={handleDelete}>삭제</button>
+        <button onClick={handleEditClick}> 수정</button>
+        <button onClick={handleDeleteClick}>삭제</button>
       </div>
+
+      <PasswordModal
+        id={id}
+        isOpen={isEditModalOpen}
+        title="게시글 수정"
+        onClose={() => setIsEditModalOpen(false)}
+        onConfirm={handleActualEdit}
+      />
+
+      <PasswordModal
+        id={id}
+        isOpen={isDeleteModalOpen}
+        title="게시글 삭제"
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleActualDelete}
+      />
     </div>
   );
 }

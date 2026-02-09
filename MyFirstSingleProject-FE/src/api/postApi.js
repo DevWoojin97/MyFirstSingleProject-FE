@@ -42,12 +42,33 @@ export const deletePost = async (id, password) => {
   return response.data;
 };
 
-export const updatePost = async (id, postData) => {
+export const updatePost = async (id, password, postData) => {
   try {
-    const response = await axios.patch(`${BASE_URL}/posts/${id}`, postData);
+    const response = await axios.patch(`${BASE_URL}/posts/${id}`, {
+      password,
+      ...postData,
+    });
     return response.data;
   } catch (error) {
     console.error('게시글 수정 에러:', error);
     throw error;
   }
 };
+
+// // 비밀번호 검증용 (모달)
+// export const checkPostPassword = async (id, password) => {
+//   try {
+//     const response = await axios.post(`${BASE_URL}/post/${id}/check-password`, {
+//       password: password,
+//     });
+//     return 'OK';
+//   } catch (error) {
+//     if (error.response) {
+//       const errorMessage =
+//         error.response.data.message || '비밀번호가 일치하지 않습니다.';
+//       throw new Error(errorMessage);
+//     }
+
+//     throw new Error('서버와 통신 중 오류가 발생했습니다.');
+//   }
+// };

@@ -1,19 +1,28 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import styles from './UpdatePost.module.css';
 import { getPostById, updatePost } from '@/api/postApi';
+import { toast } from 'react-toastify';
 
 export default function UpdatePost() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // 1. 상세 페이지 모달에서 보낸 비밀번호 꺼내기
+  const passwordFromState = location.state?.password;
 
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    nickname: '', // 닉네임은 수정 못하게 막는 경우도 많지만 일단 포함
-    password: '', // 본인 확인용
+    nickname: '',
   });
-
+  useEffect(() => {
+    if (!passwordFromState) {
+      toast.warn('비밀번호 인증이 필요합니다.');
+      navigate(`/post/${id}`);
+    }
+  }, [passwordFromState, id, navigate]);
   // 1. 기존 데이터 불러오기
   useEffect(() => {
     const fetchPost = async () => {
@@ -21,10 +30,9 @@ export default function UpdatePost() {
         const data = await getPostById(id);
         // 불러온 데이터로 폼 상태 업데이트
         setFormData({
-          title: data.title,
-          content: data.content,
-          nickname: data.nickname,
-          password: '', // 비밀번호는 보안상 비워두고 새로 입력받음
+          title: data.title || '',
+          content: data.content || '',
+          nickname: data.nickname || '',
         });
       } catch (err) {
         alert('데이터를 불러오지 못했습니다.', err);
@@ -42,15 +50,13 @@ export default function UpdatePost() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updatePost(id, formData);
-      alert('수정이 완료되었습니다.');
+      await updatePost(id, passwordFromState, formData);
+      toast.success('수정이 완료되었습니다.');
       navigate(`/post/${id}`);
     } catch (err) {
-      if (err.response?.status === 401) {
-        alert('비밀번호가 일치하지 않습니다.');
-      } else {
-        alert('수정 중 오류가 발생했습니다.');
-      }
+      toast.error(
+        err.response?.data?.message || '수정 중 오류가 발생했습니다.',
+      );
     }
   };
 
@@ -64,16 +70,7 @@ export default function UpdatePost() {
             name="nickname"
             placeholder="작성자 닉네임"
             value={formData.nickname}
-            onChange={handleChange}
-          />
-        </div>
-        <div className={styles.inputGroup}>
-          <input
-            type="text"
-            name="password"
-            placeholder="비밀번호를 입력하세요."
-            value={formData.password}
-            onChange={handleChange}
+            readOnly
           />
         </div>
         <div className={styles.inputGroup}>
