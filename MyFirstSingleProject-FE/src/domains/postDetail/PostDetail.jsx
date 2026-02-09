@@ -3,6 +3,7 @@ import PasswordModal from '@/components/PasswordModal/PasswordModal';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import styles from './PostDetail.module.css'; // CSS 모듈 임포트
 
 export default function PostDetail() {
   const { id } = useParams();
@@ -37,14 +38,11 @@ export default function PostDetail() {
   const handleActualEdit = async (password) => {
     try {
       await updatePost(id, password);
-
       setIsEditModalOpen(false);
       navigate(`/post/${id}/edit`, { state: { password } });
     } catch (error) {
       toast.error('비밀번호가 일치하지 않습니다. 🙅');
-      throw new Error(
-        error.response?.data?.message || '비밀번호가 일치하지 않습니다.',
-      );
+      throw new Error(error.response?.data?.message || '비밀번호가 일치하지 않습니다.');
     }
   };
 
@@ -55,54 +53,47 @@ export default function PostDetail() {
   const handleActualDelete = async (password) => {
     try {
       await deletePost(id, password);
-
       setIsDeleteModalOpen(false);
       toast.success('성공적으로 삭제되었습니다.');
       navigate('/');
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || '비밀번호가 일치하지 않습니다.',
-      );
+      toast.error(error.response?.data?.message || '비밀번호가 일치하지 않습니다.');
     }
   };
 
-  if (!post) {
-    return <div>존재하지 않는 게시글입니다.</div>;
-  }
+  if (loading) return <div className={styles.loading}>로딩 중...</div>;
+  if (!post) return <div className={styles.error}>존재하지 않는 게시글입니다.</div>;
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>{post.title}</h2>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          borderBottom: '1px solid #ccc',
-        }}
-      >
-        <span>
-          작성자: <strong>{post.nickname}</strong>
-        </span>
-        <span>
-          작성일:{new Date(post.createdAt).toLocaleDateString()} | 조회수:
-          {post.view}
-        </span>
-      </div>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <h2 className={styles.title}>{post.title}</h2>
+        <div className={styles.info}>
+          <div className={styles.infoLeft}>
+            <span className={styles.nickname}>{post.nickname}</span>
+            <span className={styles.date}>{new Date(post.createdAt).toLocaleString()}</span>
+          </div>
+          <div className={styles.infoRight}>
+            <span>조회 {post.view}</span>
+          </div>
+        </div>
+      </header>
 
-      <div style={{ padding: '40px 0', minHeight: '200px' }}>
+      <div className={styles.content}>
         {post.content}
       </div>
 
-      <hr />
-
-      <div>
-        <button onClick={handleGoToList}>목록으로</button>
-        <button onClick={handleEditClick}> 수정</button>
-        <button onClick={handleDeleteClick}>삭제</button>
+      <div className={styles.footer}>
+        <div className={styles.btnLeft}>
+          <button onClick={handleGoToList} className={styles.btnGray}>목록</button>
+        </div>
+        <div className={styles.btnRight}>
+          <button onClick={handleEditClick} className={styles.btnBlue}>수정</button>
+          <button onClick={handleDeleteClick} className={styles.btnGray}>삭제</button>
+        </div>
       </div>
 
       <PasswordModal
-        id={id}
         isOpen={isEditModalOpen}
         title="게시글 수정"
         onClose={() => setIsEditModalOpen(false)}
@@ -110,7 +101,6 @@ export default function PostDetail() {
       />
 
       <PasswordModal
-        id={id}
         isOpen={isDeleteModalOpen}
         title="게시글 삭제"
         onClose={() => setIsDeleteModalOpen(false)}

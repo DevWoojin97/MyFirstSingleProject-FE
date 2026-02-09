@@ -9,7 +9,7 @@ export default function UpdatePost() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 1. 상세 페이지 모달에서 보낸 비밀번호 꺼내기
+  // 상세 페이지 모달에서 보낸 비밀번호 꺼내기
   const passwordFromState = location.state?.password;
 
   const [formData, setFormData] = useState({
@@ -17,25 +17,25 @@ export default function UpdatePost() {
     content: '',
     nickname: '',
   });
+
   useEffect(() => {
     if (!passwordFromState) {
       toast.warn('비밀번호 인증이 필요합니다.');
       navigate(`/post/${id}`);
     }
   }, [passwordFromState, id, navigate]);
-  // 1. 기존 데이터 불러오기
+
   useEffect(() => {
     const fetchPost = async () => {
       try {
         const data = await getPostById(id);
-        // 불러온 데이터로 폼 상태 업데이트
         setFormData({
           title: data.title || '',
           content: data.content || '',
           nickname: data.nickname || '',
         });
       } catch (err) {
-        alert('데이터를 불러오지 못했습니다.', err);
+        toast.error('데이터를 불러오지 못했습니다.');
         navigate('/');
       }
     };
@@ -51,7 +51,7 @@ export default function UpdatePost() {
     e.preventDefault();
     try {
       await updatePost(id, passwordFromState, formData);
-      toast.success('수정이 완료되었습니다.');
+      toast.success('수정이 완료되었습니다. ✨');
       navigate(`/post/${id}`);
     } catch (err) {
       toast.error(
@@ -62,35 +62,49 @@ export default function UpdatePost() {
 
   return (
     <div className={styles.container}>
-      <h2>게시글 작성</h2>
-      <form onSubmit={handleSubmit}>
-        <div className={styles.inputGroup}>
-          <input
-            type="text"
-            name="nickname"
-            placeholder="작성자 닉네임"
-            value={formData.nickname}
-            readOnly
-          />
+      <header className={styles.header}>
+        <h2>게시글 수정</h2>
+      </header>
+
+      <form onSubmit={handleSubmit} className={styles.form}>
+        {/* 닉네임 (수정 불가 - 디시 느낌의 회색 톤) */}
+        <div className={styles.infoInputRow}>
+          <div className={styles.readOnlyBox}>
+            <span className={styles.label}>작성자</span>
+            <input
+              type="text"
+              name="nickname"
+              value={formData.nickname}
+              readOnly
+              className={styles.smallInputReadOnly}
+            />
+          </div>
         </div>
-        <div className={styles.inputGroup}>
+
+        {/* 제목 섹션 */}
+        <div className={styles.titleRow}>
           <input
             type="text"
             name="title"
             placeholder="제목을 입력하세요"
             value={formData.title}
             onChange={handleChange}
+            className={styles.titleInput}
           />
         </div>
-        <div className={styles.inputGroup}>
-          <input
-            type="text"
+
+        {/* 본문 섹션 (textarea) */}
+        <div className={styles.contentRow}>
+          <textarea
             name="content"
             placeholder="내용을 입력하세요."
             value={formData.content}
             onChange={handleChange}
+            className={styles.contentTextarea}
           />
         </div>
+
+        {/* 버튼 섹션 */}
         <div className={styles.buttonGroup}>
           <button
             type="button"

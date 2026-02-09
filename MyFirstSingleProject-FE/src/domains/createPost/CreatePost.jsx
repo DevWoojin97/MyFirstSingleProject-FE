@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './CreatePost.module.css';
 import { createPost } from '@/api/postApi';
+import { toast } from 'react-toastify'; // alert 대신 toast 사용
 
 export default function CreatePost() {
   const navigate = useNavigate();
@@ -24,66 +25,81 @@ export default function CreatePost() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.content) {
-      alert('제목과 내용을 입력해주세요!');
+    if (
+      !formData.title ||
+      !formData.content ||
+      !formData.nickname ||
+      !formData.password
+    ) {
+      toast.warn('모든 항목을 입력해주세요!');
       return;
     }
+
     try {
       await createPost(formData);
-      alert('게시글이 등록되었습니다.');
+      toast.success('게시글이 등록되었습니다. ✨');
       navigate('/');
     } catch (error) {
       console.error('등록 실패:', error);
-      alert('서버 오류로 등록에 실패했습니다.');
+      toast.error('서버 오류로 등록에 실패했습니다.');
     }
   };
-  const handleGoToList = () => {
-    navigate('/');
-  };
+
   return (
     <div className={styles.container}>
-      <h2>게시글 작성</h2>
-      <form onSubmit={handleSubmit}>
-        <div className={styles.inputGroup}>
+      <header className={styles.header}>
+        <h2>게시글 작성</h2>
+      </header>
+
+      <form onSubmit={handleSubmit} className={styles.form}>
+        {/* 작성 정보 섹션 (닉네임, 비밀번호) */}
+        <div className={styles.infoInputRow}>
           <input
             type="text"
             name="nickname"
-            placeholder="작성자 닉네임"
+            placeholder="닉네임"
             value={formData.nickname}
             onChange={handleChange}
+            className={styles.smallInput}
           />
-        </div>
-        <div className={styles.inputGroup}>
           <input
-            type="text"
+            type="password"
             name="password"
-            placeholder="비밀번호를 입력하세요."
+            placeholder="비밀번호"
             value={formData.password}
             onChange={handleChange}
+            className={styles.smallInput}
           />
         </div>
-        <div className={styles.inputGroup}>
+
+        {/* 제목 섹션 */}
+        <div className={styles.titleRow}>
           <input
             type="text"
             name="title"
             placeholder="제목을 입력하세요"
             value={formData.title}
             onChange={handleChange}
+            className={styles.titleInput}
           />
         </div>
-        <div className={styles.inputGroup}>
-          <input
-            type="text"
+
+        {/* 본문 섹션 (textarea로 변경) */}
+        <div className={styles.contentRow}>
+          <textarea
             name="content"
             placeholder="내용을 입력하세요."
             value={formData.content}
             onChange={handleChange}
+            className={styles.contentTextarea}
           />
         </div>
+
+        {/* 버튼 섹션 */}
         <div className={styles.buttonGroup}>
           <button
             type="button"
-            onClick={handleGoToList}
+            onClick={() => navigate('/')}
             className={styles.btnCancel}
           >
             취소

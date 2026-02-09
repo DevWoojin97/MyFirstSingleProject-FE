@@ -1,0 +1,98 @@
+.container {
+  max-width: 950px;
+  margin: 20px auto;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  color: #333;
+}
+
+.header {
+  border-bottom: 2px solid #292a2b; /* 디시 상단 블랙 라인 느낌 */
+  padding-bottom: 10px;
+  margin-bottom: 0px;
+}
+
+.header h1 {
+  font-size: 18px;
+  color: #292a2b;
+  margin: 0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border-top: 2px solid #3b4890; /* 디시 특유의 다크블루 포인트 라인 */
+  font-size: 13px;
+}
+
+.table thead th {
+  background-color: #f2f2f2;
+  border-bottom: 1px solid #ccc;
+  padding: 8px 0;
+  font-weight: bold;
+}
+
+.tr {
+  border-bottom: 1px solid #eee;
+}
+
+.tr:hover {
+  background-color: #f9f9f9; /* 마우스 올렸을 때 살짝 변하는 느낌 */
+}
+
+.tr td {
+  padding: 7px 0;
+  text-align: center;
+  color: #444;
+}
+
+/* 각 열의 가로 폭 조정 */
+.num {
+  width: 60px;
+}
+.writer {
+  width: 120px;
+}
+.date {
+  width: 80px;
+  color: #777 !important;
+}
+.view {
+  width: 60px;
+  color: #777 !important;
+}
+
+.titleText {
+  text-align: left !important;
+  padding-left: 10px !important;
+}
+
+.link {
+  text-decoration: none;
+  color: #333;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.buttonWrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+}
+
+.writeBtn {
+  background-color: #3b4890;
+  color: white;
+  border: 1px solid #2f3a76;
+  padding: 6px 15px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.writeBtn:hover {
+  background-color: #2f3a76;
+}
