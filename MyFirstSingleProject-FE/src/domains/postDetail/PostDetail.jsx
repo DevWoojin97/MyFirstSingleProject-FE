@@ -1,9 +1,15 @@
-import { deletePost, getPostById, updatePost } from '@/api/postApi';
+import {
+  deletePost,
+  getPostById,
+  updatePost,
+  createComment,
+} from '@/api/postApi';
 import PasswordModal from '@/components/PasswordModal/PasswordModal';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import styles from './PostDetail.module.css'; // CSS 모듈 임포트
+import styles from './PostDetail.module.css';
+import CommentSection from '@/components/Comment/CommentSection';
 
 export default function PostDetail() {
   const { id } = useParams();
@@ -13,27 +19,25 @@ export default function PostDetail() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const data = await getPostById(id);
-        setPost(data);
-      } catch (error) {
-        console.error('데이터 로드 실패', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPost();
+  const fetchPost = useCallback(async () => {
+    try {
+      const data = await getPostById(id);
+      setPost(data);
+    } catch (error) {
+      console.error('데이터 로드 실패', error);
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
 
-  const handleGoToList = () => {
-    navigate('/');
-  };
+  useEffect(() => {
+    fetchPost();
+  }, [fetchPost]);
 
-  const handleEditClick = () => {
-    setIsEditModalOpen(true);
-  };
+  // 핸들러들
+  const handleGoToList = () => navigate('/');
+  const handleEditClick = () => setIsEditModalOpen(true);
+  const handleDeleteClick = () => setIsDeleteModalOpen(true);
 
   const handleActualEdit = async (password) => {
     try {
@@ -42,12 +46,7 @@ export default function PostDetail() {
       navigate(`/post/${id}/edit`, { state: { password } });
     } catch (error) {
       toast.error('비밀번호가 일치하지 않습니다. 🙅');
-      throw new Error(error.response?.data?.message || '비밀번호가 일치하지 않습니다.');
     }
-  };
-
-  const handleDeleteClick = () => {
-    setIsDeleteModalOpen(true);
   };
 
   const handleActualDelete = async (password) => {
@@ -57,12 +56,25 @@ export default function PostDetail() {
       toast.success('성공적으로 삭제되었습니다.');
       navigate('/');
     } catch (error) {
-      toast.error(error.response?.data?.message || '비밀번호가 일치하지 않습니다.');
+      toast.error('비밀번호가 일치하지 않습니다.');
+    }
+  };
+
+  // 댓글 등록 로직만 부모에서 관리 (데이터 갱신을 위해)
+  const handleCommentSubmit = async (commentData, successCallback) => {
+    try {
+      await createComment(id, commentData);
+      toast.success('댓글이 등록되었습니다. 💬');
+      successCallback(); // 입력창 비우기
+      fetchPost(); // 목록 새로고침
+    } catch (error) {
+      toast.error('댓글 등록 실패');
     }
   };
 
   if (loading) return <div className={styles.loading}>로딩 중...</div>;
-  if (!post) return <div className={styles.error}>존재하지 않는 게시글입니다.</div>;
+  if (!post)
+    return <div className={styles.error}>존재하지 않는 게시글입니다.</div>;
 
   return (
     <div className={styles.container}>
@@ -71,7 +83,9 @@ export default function PostDetail() {
         <div className={styles.info}>
           <div className={styles.infoLeft}>
             <span className={styles.nickname}>{post.nickname}</span>
-            <span className={styles.date}>{new Date(post.createdAt).toLocaleString()}</span>
+            <span className={styles.date}>
+              {new Date(post.createdAt).toLocaleString()}
+            </span>
           </div>
           <div className={styles.infoRight}>
             <span>조회 {post.view}</span>
@@ -79,17 +93,27 @@ export default function PostDetail() {
         </div>
       </header>
 
-      <div className={styles.content}>
-        {post.content}
-      </div>
+      <div className={styles.content}>{post.content}</div>
+
+      {/* 분리한 댓글 섹션 */}
+      <CommentSection
+        comments={post.comments}
+        onCommentSubmit={handleCommentSubmit}
+      />
 
       <div className={styles.footer}>
         <div className={styles.btnLeft}>
-          <button onClick={handleGoToList} className={styles.btnGray}>목록</button>
+          <button onClick={handleGoToList} className={styles.btnGray}>
+            목록
+          </button>
         </div>
         <div className={styles.btnRight}>
-          <button onClick={handleEditClick} className={styles.btnBlue}>수정</button>
-          <button onClick={handleDeleteClick} className={styles.btnGray}>삭제</button>
+          <button onClick={handleEditClick} className={styles.btnBlue}>
+            수정
+          </button>
+          <button onClick={handleDeleteClick} className={styles.btnGray}>
+            삭제
+          </button>
         </div>
       </div>
 
@@ -99,7 +123,6 @@ export default function PostDetail() {
         onClose={() => setIsEditModalOpen(false)}
         onConfirm={handleActualEdit}
       />
-
       <PasswordModal
         isOpen={isDeleteModalOpen}
         title="게시글 삭제"

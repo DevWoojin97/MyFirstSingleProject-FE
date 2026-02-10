@@ -35,7 +35,9 @@ export default function UpdatePost() {
           nickname: data.nickname || '',
         });
       } catch (err) {
-        toast.error('데이터를 불러오지 못했습니다.');
+        toast.error(
+          err.response?.data?.message || '데이터를 불러오지 못했습니다.',
+        );
         navigate('/');
       }
     };

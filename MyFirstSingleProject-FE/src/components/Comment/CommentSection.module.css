@@ -1,0 +1,80 @@
+.commentSection {
+  margin: 30px 0;
+  border-top: 2px solid #3b4890;
+  background: #fff;
+  text-align: left;
+}
+
+.commentTitle {
+  padding: 10px;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+  color: #3b4890;
+}
+
+.commentItem {
+  padding: 12px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.commentNickname {
+  font-weight: bold;
+  font-size: 13px;
+  margin-right: 10px;
+}
+
+.commentDate {
+  font-size: 11px;
+  color: #999;
+}
+
+.commentText {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.commentForm {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+}
+
+.commentFormTop {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.commentInput {
+  width: 120px;
+  height: 24px;
+  padding: 0 5px;
+  border: 1px solid #ccc;
+  font-size: 12px;
+}
+
+.commentFormBottom {
+  display: flex;
+  gap: 4px;
+}
+
+.commentTextarea {
+  flex: 1;
+  height: 60px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  resize: none;
+}
+
+.commentSubmitBtn {
+  width: 60px;
+  background: #3b4890;
+  color: #fff;
+  border: 1px solid #2e3a75;
+  font-weight: bold;
+  cursor: pointer;
+}

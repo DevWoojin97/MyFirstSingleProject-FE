@@ -3,9 +3,11 @@ import axios from 'axios';
 const BASE_URL = 'http://localhost:5050/api';
 
 //게시글 전체목록 조회
-export const getPosts = async () => {
+export const getPosts = async ({ page, limit, search, sort, order } = {}) => {
   try {
-    const response = await axios.get(`${BASE_URL}/posts`);
+    const response = await axios.get(`${BASE_URL}/posts`, {
+      params: { page, limit, search, sort, order },
+    });
     return response.data; // 데이터만 쏙 뽑아서 반환
   } catch (error) {
     console.error('API 호출 에러:', error);
@@ -53,6 +55,16 @@ export const updatePost = async (id, password, postData) => {
     console.error('게시글 수정 에러:', error);
     throw error;
   }
+};
+
+//댓글 작성
+export const createComment = async (postId, commentData) => {
+  // commentData = { nickname, password, content }
+  const response = await axios.post(
+    `${BASE_URL}/posts/${postId}/comments`,
+    commentData,
+  );
+  return response.data;
 };
 
 // // 비밀번호 검증용 (모달)
