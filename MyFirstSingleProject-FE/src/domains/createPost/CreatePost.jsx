@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'; // alert 대신 toast 사용
 
 export default function CreatePost() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -25,23 +26,29 @@ export default function CreatePost() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !formData.title ||
-      !formData.content ||
-      !formData.nickname ||
-      !formData.password
-    ) {
-      toast.warn('모든 항목을 입력해주세요!');
+    if (!formData.nickname.trim())
+      return toast.warn('닉네임을 입력해주세요! 👤');
+    if (!formData.password) return toast.warn('비밀번호를 입력해주세요! 🔒');
+    if (!formData.title.trim()) return toast.warn('제목을 입력해주세요! ✍️');
+    if (!formData.content.trim()) return toast.warn('내용을 입력해주세요! 📝');
+
+    const pwLength = formData.password.length;
+    if (pwLength < 4 || pwLength > 8) {
+      toast.warn('비밀번호는 4자에서 8자 사이여야 합니다!');
       return;
     }
-
+    setIsLoading(true);
     try {
       await createPost(formData);
       toast.success('게시글이 등록되었습니다. ✨');
       navigate('/');
     } catch (error) {
       console.error('등록 실패:', error);
-      toast.error('서버 오류로 등록에 실패했습니다.');
+      const errorMsg =
+        error.response?.data?.message || '서버 오류로 등록에 실패했습니다.';
+      toast.error(errorMsg);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -101,11 +108,16 @@ export default function CreatePost() {
             type="button"
             onClick={() => navigate('/')}
             className={styles.btnCancel}
+            disabled={isLoading}
           >
             취소
           </button>
-          <button type="submit" className={styles.btnSubmit}>
-            등록
+          <button
+            type="submit"
+            className={styles.btnSubmit}
+            disabled={isLoading}
+          >
+            {isLoading ? '등록 중...' : '등록'}
           </button>
         </div>
       </form>
