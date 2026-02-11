@@ -46,7 +46,7 @@ export const deletePost = async (id, password) => {
 
 export const updatePost = async (id, password, postData) => {
   try {
-    const response = await axios.patch(`${BASE_URL}/posts/${id}`, {
+    const response = await axios.patch(`${BASE_URL}/posts/${Number(id)}`, {
       password,
       ...postData,
     });
@@ -67,20 +67,20 @@ export const createComment = async (postId, commentData) => {
   return response.data;
 };
 
-// // 비밀번호 검증용 (모달)
-// export const checkPostPassword = async (id, password) => {
-//   try {
-//     const response = await axios.post(`${BASE_URL}/post/${id}/check-password`, {
-//       password: password,
-//     });
-//     return 'OK';
-//   } catch (error) {
-//     if (error.response) {
-//       const errorMessage =
-//         error.response.data.message || '비밀번호가 일치하지 않습니다.';
-//       throw new Error(errorMessage);
-//     }
+// 비밀번호 검증용 (모달)
+export const checkPostPassword = async (id, password) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/posts/${id}/verify`, {
+      password: password,
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const errorMessage =
+        error.response.data.message || '비밀번호가 일치하지 않습니다.';
+      throw new Error(errorMessage);
+    }
 
-//     throw new Error('서버와 통신 중 오류가 발생했습니다.');
-//   }
-// };
+    throw new Error('서버와 통신 중 오류가 발생했습니다.');
+  }
+};

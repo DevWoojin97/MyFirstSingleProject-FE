@@ -3,6 +3,7 @@ import {
   getPostById,
   updatePost,
   createComment,
+  checkPostPassword,
 } from '@/api/postApi';
 import PasswordModal from '@/components/PasswordModal/PasswordModal';
 import { useCallback, useEffect, useState } from 'react';
@@ -41,7 +42,7 @@ export default function PostDetail() {
 
   const handleActualEdit = async (password) => {
     try {
-      await updatePost(id, password);
+      await checkPostPassword(id, password);
       setIsEditModalOpen(false);
       navigate(`/post/${id}/edit`, { state: { password } });
     } catch (error) {
