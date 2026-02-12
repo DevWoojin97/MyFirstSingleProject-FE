@@ -118,3 +118,58 @@
 .btnCancel:hover {
   background-color: #f2f2f2;
 }
+/* --- 모바일 대응 (반응형) --- */
+@media (max-width: 768px) {
+  .container {
+    margin: 10px auto;
+    padding: 0 15px; /* 모바일은 좌우 여백을 조금 더 줍니다 */
+  }
+
+  .header h2 {
+    font-size: 16px; /* 모바일에서 제목 크기 살짝 축소 */
+  }
+
+  /* 1. 닉네임, 비밀번호 행을 세로로 쌓기 */
+  .infoInputRow {
+    flex-direction: column; /* 가로 배열을 세로로 변경 */
+    gap: 8px;
+    padding: 10px 0;
+  }
+
+  .smallInput {
+    width: 100%; /* 모바일에서는 입력창을 가로로 꽉 채움 */
+    box-sizing: border-box;
+    font-size: 14px; /* 모바일에서 줌 방지를 위해 14~16px 권장 */
+    padding: 12px; /* 터치하기 편하도록 패딩 증가 */
+  }
+
+  /* 2. 제목 입력창 */
+  .titleRow {
+    padding: 10px 0;
+  }
+
+  .titleInput {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  /* 3. 본문 입력창 */
+  .contentTextarea {
+    min-height: 300px; /* 모바일 화면 높이를 고려해 약간 축소 */
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  /* 4. 하단 버튼 영역 */
+  .buttonGroup {
+    justify-content: center; /* 버튼을 가운데 정렬하거나 */
+    /* justify-content: space-between; */ /* 양 끝으로 벌리기 */
+    padding-top: 15px;
+  }
+
+  .buttonGroup button {
+    flex: 1; /* 버튼이 동일한 비율로 가로를 채우도록 함 */
+    padding: 12px 0;
+    font-size: 14px;
+  }
+}

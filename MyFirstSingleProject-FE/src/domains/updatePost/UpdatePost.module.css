@@ -123,3 +123,63 @@
 .btnCancel:hover {
   background-color: #f2f2f2;
 }
+
+/* --- 모바일 대응 (반응형) --- */
+@media (max-width: 768px) {
+  .container {
+    margin: 10px auto;
+    padding: 0 15px;
+  }
+
+  .header h2 {
+    font-size: 16px;
+  }
+
+  /* 1. 읽기 전용 정보 (닉네임 등) 최적화 */
+  .infoInputRow {
+    padding: 12px 0;
+  }
+
+  .readOnlyBox {
+    flex-direction: column; /* 라벨과 박스를 위아래로 */
+    align-items: flex-start; /* 왼쪽 정렬 */
+    gap: 5px;
+  }
+
+  .smallInputReadOnly {
+    width: 100%; /* 모바일에서는 가로 꽉 채우기 */
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  /* 2. 제목 입력창 */
+  .titleRow {
+    padding: 10px 0;
+  }
+
+  .titleInput {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  /* 3. 본문 입력창 */
+  .contentTextarea {
+    min-height: 300px; /* 모바일 높이에 맞춰 조정 */
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  /* 4. 하단 버튼 그룹 */
+  .buttonGroup {
+    justify-content: center;
+    padding-top: 15px;
+    gap: 8px;
+  }
+
+  .buttonGroup button {
+    flex: 1; /* 수정/취소 버튼이 화면 절반씩 차지 */
+    padding: 12px 0;
+    font-size: 14px;
+  }
+}

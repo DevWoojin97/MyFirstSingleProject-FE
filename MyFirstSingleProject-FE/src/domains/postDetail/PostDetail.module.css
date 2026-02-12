@@ -89,3 +89,69 @@
   font-size: 14px;
   color: #666;
 }
+
+/* --- 모바일 대응 (반응형) --- */
+@media (max-width: 768px) {
+  .container {
+    margin: 0; /* 모바일은 컨테이너 여백을 없애 화면을 꽉 채웁니다 */
+    padding: 0;
+  }
+
+  /* 1. 헤더 영역 최적화 */
+  .header {
+    padding: 12px 15px;
+  }
+
+  .title {
+    font-size: 16px; /* 제목 크기 살짝 조절 */
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+
+  .info {
+    flex-direction: column; /* 닉네임과 날짜/조회수를 2단으로 배치 */
+    gap: 4px;
+    font-size: 12px;
+  }
+
+  .nickname {
+    margin-right: 0;
+  }
+
+  .date {
+    font-size: 11px;
+  }
+
+  /* 2. 본문 영역 */
+  .content {
+    padding: 25px 15px; /* 본문 여백 최적화 */
+    min-height: 200px;
+    font-size: 15px; /* 모바일 가독성을 위해 폰트 살짝 키움 */
+    line-height: 1.7;
+  }
+
+  /* 3. 하단 버튼 영역 */
+  .footer {
+    padding: 15px;
+    flex-direction: column; /* 목록 버튼과 수정/삭제 버튼을 위아래로 */
+    gap: 12px;
+  }
+
+  .footer div {
+    display: flex;
+    width: 100%;
+    gap: 5px;
+  }
+
+  /* 버튼이 모바일에서 누르기 편하게 너비를 키움 */
+  .footer button {
+    flex: 1;
+    padding: 10px 0;
+    font-size: 14px;
+    margin-left: 0; /* 기존 마진 제거 */
+  }
+
+  .btnGray {
+    order: 2; /* 목록 버튼이 아래로 가게 하고 싶다면 사용 */
+  }
+}

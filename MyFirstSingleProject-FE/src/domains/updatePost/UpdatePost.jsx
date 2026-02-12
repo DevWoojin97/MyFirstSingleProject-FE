@@ -18,6 +18,8 @@ export default function UpdatePost() {
     nickname: '',
   });
 
+  
+
   useEffect(() => {
     if (!passwordFromState) {
       toast.warn('비밀번호 인증이 필요합니다.');

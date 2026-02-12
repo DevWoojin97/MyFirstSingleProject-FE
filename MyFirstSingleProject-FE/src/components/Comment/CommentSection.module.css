@@ -78,3 +78,58 @@
   font-weight: bold;
   cursor: pointer;
 }
+
+/* --- 모바일 대응 (반응형) --- */
+@media (max-width: 768px) {
+  .commentSection {
+    margin: 20px 0;
+  }
+
+  /* 1. 댓글 리스트 아이템 */
+  .commentItem {
+    padding: 10px;
+  }
+
+  .commentNickname {
+    font-size: 12px;
+  }
+
+  .commentText {
+    font-size: 14px; /* 모바일 가독성을 위해 본문은 살짝 키움 */
+    margin-top: 8px;
+  }
+
+  /* 2. 댓글 작성 폼 (가장 중요한 부분) */
+  .commentForm {
+    padding: 10px;
+  }
+
+  .commentFormTop {
+    /* 닉네임, 비번 입력창이 너무 좁아지지 않게 조정 */
+    flex-direction: row;
+    gap: 5px;
+  }
+
+  .commentInput {
+    flex: 1; /* 가로 공간을 절반씩 나눠 가짐 */
+    width: auto; /* 고정폭 해제 */
+    height: 32px; /* 터치하기 편하게 높이 증가 */
+    font-size: 14px; /* 줌 방지 */
+  }
+
+  .commentFormBottom {
+    flex-direction: column; /* 텍스트창과 등록 버튼을 위아래로 */
+    gap: 8px;
+  }
+
+  .commentTextarea {
+    height: 80px; /* 입력 영역 확보 */
+    font-size: 14px;
+  }
+
+  .commentSubmitBtn {
+    width: 100%; /* 버튼을 가로로 꽉 채움 */
+    height: 40px; /* 누르기 편한 높이 */
+    font-size: 14px;
+  }
+}
