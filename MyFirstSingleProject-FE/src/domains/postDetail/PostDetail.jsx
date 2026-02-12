@@ -4,6 +4,7 @@ import {
   updatePost,
   createComment,
   checkPostPassword,
+  deleteComment,
 } from '@/api/postApi';
 import PasswordModal from '@/components/PasswordModal/PasswordModal';
 import { useCallback, useEffect, useState } from 'react';
@@ -84,6 +85,20 @@ export default function PostDetail() {
     }
   };
 
+  const handleDeleteComment = async (commentId, password) => {
+    try {
+      await deleteComment(commentId, password);
+      toast.success('댓글이 삭제되었습니다. 🗑️');
+      fetchPost(); // 댓글 목록 갱신을 위해 데이터 다시 불러오기
+    } catch (error) {
+      const errorMsg =
+        error.response?.data?.message || '비밀번호가 일치하지 않습니다.';
+      toast.error(errorMsg);
+      console.error('Comment Delete Error:', error);
+      return false; // 실패 시 false 반환
+    }
+  };
+
   if (loading) return <div className={styles.loading}>로딩 중...</div>;
   if (!post)
     return <div className={styles.error}>존재하지 않는 게시글입니다.</div>;
@@ -111,6 +126,7 @@ export default function PostDetail() {
       <CommentSection
         comments={post.comments}
         onCommentSubmit={handleCommentSubmit}
+        onCommentDelete={handleDeleteComment}
       />
 
       <div className={styles.footer}>

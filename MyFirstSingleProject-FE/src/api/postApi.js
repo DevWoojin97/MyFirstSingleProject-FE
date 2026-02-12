@@ -66,6 +66,14 @@ export const createComment = async (postId, commentData) => {
   );
   return response.data;
 };
+//댓글 삭제
+export const deleteComment = async (commentId, password) => {
+  const response = await axios.patch(
+    `${BASE_URL}/posts/comments/${commentId}`,
+    { password },
+  );
+  return response.data;
+};
 
 // 비밀번호 검증용 (모달)
 export const checkPostPassword = async (id, password) => {

@@ -1,18 +1,37 @@
 import { useState } from 'react';
 import styles from './CommentSection.module.css';
+import PasswordModal from '../PasswordModal/PasswordModal';
 
-export default function CommentSection({ comments, onCommentSubmit }) {
+export default function CommentSection({
+  comments,
+  onCommentSubmit,
+  onCommentDelete,
+}) {
   const [commentInput, setCommentInput] = useState({
     nickname: '',
     password: '',
     content: '',
   });
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedCommentId, setSelectedCommentId] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onCommentSubmit(commentInput, () => {
       setCommentInput({ nickname: '', password: '', content: '' }); // 성공 시 초기화 콜백
     });
+  };
+
+  const handleDeleteClick = (commentId) => {
+    setSelectedCommentId(commentId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async (password) => {
+    const success = await onCommentDelete(selectedCommentId, password);
+    if (success) {
+      setIsDeleteModalOpen(false);
+    }
   };
 
   return (
@@ -25,12 +44,21 @@ export default function CommentSection({ comments, onCommentSubmit }) {
           comments.map((comment) => (
             <div key={comment.id} className={styles.commentItem}>
               <div className={styles.commentMeta}>
-                <span className={styles.commentNickname}>
-                  {comment.nickname}
-                </span>
-                <span className={styles.commentDate}>
-                  {new Date(comment.createdAt).toLocaleString()}
-                </span>
+                <div className={styles.metaLeft}>
+                  <span className={styles.commentNickname}>
+                    {comment.nickname}
+                  </span>
+                  <span className={styles.commentDate}>
+                    {new Date(comment.createdAt).toLocaleString()}
+                  </span>
+                </div>
+
+                <button
+                  className={styles.commentDeleteBtn}
+                  onClick={() => handleDeleteClick(comment.id)}
+                >
+                  삭제
+                </button>
               </div>
               <p className={styles.commentText}>{comment.content}</p>
             </div>
@@ -76,6 +104,13 @@ export default function CommentSection({ comments, onCommentSubmit }) {
           </button>
         </div>
       </form>
+
+      <PasswordModal
+        isOpen={isDeleteModalOpen}
+        title="댓글 삭제"
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </section>
   );
 }
