@@ -128,23 +128,31 @@
 /* --- 모바일 대응 (반응형) --- */
 @media (max-width: 768px) {
   .container {
-    margin: 10px 0; /* 상하 여백 줄임 */
+    margin: 10px 0;
     width: 100%;
   }
 
-  /* 1. 헤더 간소화 */
   .header {
     padding: 10px;
   }
 
-  /* 2. 테이블을 리스트 형태로 최적화 */
-  /* 모바일에서는 번호(num)와 조회수(view)를 숨겨서 제목을 더 넓게 확보합니다. */
+  /* 2. 테이블 리스트 최적화 + 모바일 전체 클릭 커스텀 */
+  .tr {
+    cursor: pointer; /* 행 전체에 손가락 모양 표시 */
+    /* 모바일에서 터치 시 생기는 파란 하이라이트 제거 (직접 만든 효과를 쓰기 위함) */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  }
+
+  /* [추가] 모바일에서 행을 누르고 있을 때 색상이 변하여 클릭됨을 알림 */
+  .tr:active {
+    background-color: #f2f2f2 !important;
+  }
+
   .num,
   .view {
     display: none;
   }
 
-  /* 작성자 폭 조절 */
   .writer {
     width: 80px;
     font-size: 11px;
@@ -153,30 +161,31 @@
     overflow: hidden;
   }
 
-  /* 날짜 폭 조절 */
   .date {
     width: 60px;
     font-size: 11px;
   }
 
-  /* 제목 영역 확보 */
   .titleText {
     padding-left: 8px !important;
-    font-size: 14px; /* 모바일에서 가독성을 위해 살짝 키움 */
+    font-size: 14px;
+    /* [추가] 제목이 너무 길어지면 다른 영역을 침범하지 않게 줄임표 처리 */
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  /* 3. 하단 검색창 최적화 */
   .searchWrapper {
-    flex-wrap: wrap; /* 창이 좁아지면 아래로 흐르게 */
+    flex-wrap: wrap;
     padding: 10px;
   }
 
   .searchInput {
-    flex: 1; /* 입력창이 남은 공간을 다 채우도록 */
+    flex: 1;
     width: auto;
   }
 
-  /* 4. 버튼 영역 */
   .buttonWrapper {
     padding-right: 10px;
   }
@@ -185,6 +194,6 @@
 /* 초소형 기기 (아이폰 SE 등) */
 @media (max-width: 480px) {
   .date {
-    display: none; /* 아주 좁은 화면에선 날짜도 숨깁니다 */
+    display: none;
   }
 }

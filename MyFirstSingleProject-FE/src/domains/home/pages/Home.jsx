@@ -1,6 +1,6 @@
 import { getPosts } from '@/api/postApi';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
 import Pagination from '@/components/Pagination/Pagination';
 
@@ -8,6 +8,7 @@ const DEBOUNCE_DELAY = 500; // 사용자가 입력을 멈추고 0.5초 뒤에 �
 const LIMIT = 10; // 한 페이지에 보여줄 게시글 수
 
 const Home = () => {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -70,12 +71,16 @@ const Home = () => {
         <tbody>
           {posts.length > 0 ? (
             posts.map((post) => (
-              <tr key={post.id} className={styles.tr}>
+              <tr
+                key={post.id}
+                className={styles.tr}
+                onClick={() => navigate(`/post/${post.id}`)} // 3. 행 전체 클릭 시 이동
+                style={{ cursor: 'pointer' }} // 마우스 올리면 손가락 모양
+              >
                 <td className={styles.num}>{post.id}</td>
                 <td className={styles.titleText}>
-                  <Link to={`/post/${post.id}`} className={styles.link}>
-                    {post.title}
-                  </Link>
+                  {/* Link 대신 텍스트만 둬도 되고, 그대로 둬도 무방합니다 */}
+                  {post.title}
                 </td>
                 <td className={styles.writer}>{post.nickname}</td>
                 <td className={styles.date}>
