@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5050/api';
+const BASE_URL = 'https://myfirstsingleproject-be.onrender.com/api';
 
 //게시글 전체목록 조회
 export const getPosts = async ({ page, limit, search, sort, order } = {}) => {
@@ -73,7 +73,7 @@ export const deleteComment = async (commentId, password) => {
     { password },
   );
   return response.data;
-};  
+};
 
 // 비밀번호 검증용 (모달)
 export const checkPostPassword = async (id, password) => {
