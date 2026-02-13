@@ -90,6 +90,7 @@ export default function PostDetail() {
       await deleteComment(commentId, password);
       toast.success('댓글이 삭제되었습니다. 🗑️');
       fetchPost(); // 댓글 목록 갱신을 위해 데이터 다시 불러오기
+      return true;
     } catch (error) {
       const errorMsg =
         error.response?.data?.message || '비밀번호가 일치하지 않습니다.';

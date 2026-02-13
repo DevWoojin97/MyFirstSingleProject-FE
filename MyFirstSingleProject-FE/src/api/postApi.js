@@ -73,7 +73,7 @@ export const deleteComment = async (commentId, password) => {
     { password },
   );
   return response.data;
-};
+};  
 
 // 비밀번호 검증용 (모달)
 export const checkPostPassword = async (id, password) => {

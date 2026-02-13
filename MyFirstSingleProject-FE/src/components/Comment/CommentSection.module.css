@@ -79,6 +79,38 @@
   cursor: pointer;
 }
 
+/* 1. 상단 메타 정보 영역 (이름+날짜 vs 삭제버튼) */
+.commentMeta {
+  display: flex;
+  justify-content: space-between; /* 양 끝으로 밀어내기 */
+  align-items: center; /* 세로 중앙 정렬 */
+  margin-bottom: 4px;
+}
+
+/* 2. 이름과 날짜를 묶어주는 왼쪽 영역 */
+.metaLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 이름과 날짜 사이 간격 */
+}
+/* 🔥 핵심: 삭제 버튼 스타일 */
+.commentDeleteBtn {
+  background: none;
+  border: 1px solid #e0e0e0;
+  color: #888;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.commentDeleteBtn:hover {
+  background-color: #fff1f1; /* 아주 연한 빨간색 배경 */
+  color: #ff4d4f; /* 삭제를 암시하는 레드 톤 */
+  border-color: #ffa39e; /* 테두리도 레드 톤으로 */
+}
 /* --- 모바일 대응 (반응형) --- */
 @media (max-width: 768px) {
   .commentSection {
@@ -131,5 +163,9 @@
     width: 100%; /* 버튼을 가로로 꽉 채움 */
     height: 40px; /* 누르기 편한 높이 */
     font-size: 14px;
+  }
+  .commentDeleteBtn {
+    padding: 4px 10px; /* 모바일은 터치하기 편하게 살짝 키움 */
+    font-size: 12px;
   }
 }
