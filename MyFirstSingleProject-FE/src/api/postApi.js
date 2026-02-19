@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://myfirstsingleproject-be.onrender.com/api';
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 //게시글 전체목록 조회
 export const getPosts = async ({ page, limit, search, sort, order } = {}) => {
