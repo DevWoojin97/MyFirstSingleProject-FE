@@ -42,6 +42,7 @@
   line-height: 1.6;
   font-size: 14px;
   color: #333;
+  white-space: pre-wrap;
   word-break: break-all;
 }
 
@@ -128,8 +129,6 @@
     min-height: 200px;
     font-size: 15px; /* 모바일 가독성을 위해 폰트 살짝 키움 */
     line-height: 1.7;
-    white-space: pre-wrap;
-    word-break: break-all;
   }
 
   /* 3. 하단 버튼 영역 */
