@@ -128,7 +128,10 @@ export default function PostDetail() {
         </div>
       </header>
 
-      <div className={styles.content}>{post.content}</div>
+      <div
+        className={styles.content}
+        dangerouslySetInnerHTML={{ __html: post.content }}
+      />
 
       {/* 분리한 댓글 섹션 */}
       <CommentSection

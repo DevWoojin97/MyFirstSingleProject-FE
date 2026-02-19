@@ -92,3 +92,24 @@ export const checkPostPassword = async (id, password) => {
     throw new Error('서버와 통신 중 오류가 발생했습니다.');
   }
 };
+
+export const uploadImage = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('image', file); // 여기서 'image'는 백엔드와 맞춘 Key 이름(백엔드 multer.single('image')와 일치)
+
+    const response = await axios.post(
+      `${BASE_URL}/posts/upload-image`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data', // 파일을 보낼 때는 필수 설정
+        },
+      },
+    );
+    return response.data; // { url: "...", filename: "..." } 반환
+  } catch (error) {
+    console.error('이미지 업로드 API 에러:', error);
+    throw error;
+  }
+};

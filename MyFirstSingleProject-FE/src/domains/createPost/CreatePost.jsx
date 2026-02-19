@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './CreatePost.module.css';
 import { createPost } from '@/api/postApi';
 import { toast } from 'react-toastify'; // alert 대신 toast 사용
+import PostEditor from '@/components/PostEditor/PostEditor';
 
 export default function CreatePost() {
   const navigate = useNavigate();
@@ -15,12 +16,20 @@ export default function CreatePost() {
     content: '',
   });
 
+  // 일반 input 변경 핸들러
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
     });
+  };
+  // 2. 에디터 전용 변경 핸들러 (PostEditor에서 호출됨)
+  const handleContentChange = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      content: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -31,6 +40,11 @@ export default function CreatePost() {
     if (!formData.password) return toast.warn('비밀번호를 입력해주세요! 🔒');
     if (!formData.title.trim()) return toast.warn('제목을 입력해주세요! ✍️');
     if (!formData.content.trim()) return toast.warn('내용을 입력해주세요! 📝');
+
+    // 3. 에디터 내용 검사 (Quill은 빈 값이면 '<p><br></p>'일 수 있음)
+    const isContentEmpty =
+      formData.content.replace(/<(.|\n)*?>/g, '').trim().length === 0;
+    if (isContentEmpty) return toast.warn('내용을 입력해주세요! 📝');
 
     const pwLength = formData.password.length;
     if (pwLength < 4 || pwLength > 8) {
@@ -91,14 +105,11 @@ export default function CreatePost() {
           />
         </div>
 
-        {/* 본문 섹션 (textarea로 변경) */}
-        <div className={styles.contentRow}>
-          <textarea
-            name="content"
-            placeholder="내용을 입력하세요."
-            value={formData.content}
-            onChange={handleChange}
-            className={styles.contentTextarea}
+        {/* 4. textarea 대신 PostEditor 배치 */}
+        <div className={styles.contentRow} style={{ minHeight: '450px' }}>
+          <PostEditor
+            content={formData.content}
+            setContent={handleContentChange}
           />
         </div>
 
