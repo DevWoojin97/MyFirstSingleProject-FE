@@ -81,6 +81,12 @@ const Home = () => {
                 <td className={styles.titleText}>
                   {/* Link 대신 텍스트만 둬도 되고, 그대로 둬도 무방합니다 */}
                   {post.title}
+                  {/* 댓글이 있을 때만 괄호와 함께 개수 표시 */}
+                  {post.commentCount > 0 && (
+                    <span className={styles.commentCount}>
+                      [{post.commentCount}]
+                    </span>
+                  )}
                 </td>
                 <td className={styles.writer}>{post.nickname}</td>
                 <td className={styles.date}>

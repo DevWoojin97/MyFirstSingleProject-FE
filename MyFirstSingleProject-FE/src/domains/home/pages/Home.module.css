@@ -124,6 +124,13 @@
   border: none;
   cursor: pointer;
 }
+.commentCount {
+  color: #ff5a5f; /* 약간 붉은 계열이 가독성이 좋아요 */
+  font-size: 0.85rem; /* 제목보다 살짝 작게 */
+  font-weight: bold;
+  margin-left: 5px; /* 제목과 너무 붙지 않게 */
+  display: inline-block; /* 레이아웃 틀어짐 방지 */
+}
 
 /* --- 모바일 대응 (반응형) --- */
 @media (max-width: 768px) {
