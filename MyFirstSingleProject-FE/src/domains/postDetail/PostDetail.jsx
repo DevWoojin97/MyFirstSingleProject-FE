@@ -50,6 +50,7 @@ export default function PostDetail() {
       // 서버에서 보낸 메시지가 있으면 그걸 쓰고, 없으면 기본 메시지 출력
       const errorMsg =
         error.response?.data?.message ||
+        error.message ||
         '비밀번호가 일치하지 않거나 오류가 발생했습니다. 🙅';
       toast.error(errorMsg);
       console.error('Edit Auth Error:', error);
@@ -64,7 +65,9 @@ export default function PostDetail() {
       navigate('/');
     } catch (error) {
       const errorMsg =
-        error.response?.data?.message || '삭제 중 오류가 발생했습니다.';
+        error.response?.data?.message ||
+        error.message ||
+        '삭제 중 오류가 발생했습니다.';
       toast.error(errorMsg);
       console.error('Delete Error:', error);
     }
@@ -79,7 +82,9 @@ export default function PostDetail() {
       fetchPost(); // 목록 새로고침
     } catch (error) {
       const errorMsg =
-        error.response?.data?.message || '댓글 등록에 실패했습니다.';
+        error.response?.data?.message ||
+        error.message ||
+        '댓글 등록에 실패했습니다.';
       toast.error(errorMsg);
       console.error('Comment Post Error:', error);
     }
@@ -93,7 +98,9 @@ export default function PostDetail() {
       return true;
     } catch (error) {
       const errorMsg =
-        error.response?.data?.message || '비밀번호가 일치하지 않습니다.';
+        error.response?.data?.message ||
+        error.message ||
+        '비밀번호가 일치하지 않습니다.';
       toast.error(errorMsg);
       console.error('Comment Delete Error:', error);
       return false; // 실패 시 false 반환
