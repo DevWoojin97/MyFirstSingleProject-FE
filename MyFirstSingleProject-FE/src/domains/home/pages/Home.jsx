@@ -79,7 +79,14 @@ const Home = () => {
               >
                 <td className={styles.num}>{post.id}</td>
                 <td className={styles.titleText}>
-                  {/* Link 대신 텍스트만 둬도 되고, 그대로 둬도 무방합니다 */}
+                  {/* 1. 아이콘 (제목 좌측) */}
+                  <span
+                    className={
+                      post.hasImage ? styles.cameraIcon : styles.talkIcon
+                    }
+                  >
+                    {post.hasImage ? '📷 ' : '💬 '}
+                  </span>
                   {post.title}
                   {/* 댓글이 있을 때만 괄호와 함께 개수 표시 */}
                   {post.commentCount > 0 && (

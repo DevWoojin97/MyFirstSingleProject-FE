@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import styles from './UpdatePost.module.css';
 import { getPostById, updatePost } from '@/api/postApi';
 import { toast } from 'react-toastify';
+import PostEditor from '@/components/PostEditor/PostEditor';
 
 export default function UpdatePost() {
   const { id } = useParams();
@@ -17,8 +18,6 @@ export default function UpdatePost() {
     content: '',
     nickname: '',
   });
-
-  
 
   useEffect(() => {
     if (!passwordFromState) {
@@ -64,6 +63,11 @@ export default function UpdatePost() {
     }
   };
 
+  // 2. 에디터 전용 변경 핸들러 추가
+  const handleContentChange = (newContent) => {
+    setFormData((prev) => ({ ...prev, content: newContent }));
+  };
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -97,14 +101,11 @@ export default function UpdatePost() {
           />
         </div>
 
-        {/* 본문 섹션 (textarea) */}
-        <div className={styles.contentRow}>
-          <textarea
-            name="content"
-            placeholder="내용을 입력하세요."
-            value={formData.content}
-            onChange={handleChange}
-            className={styles.contentTextarea}
+        {/* 본문 섹션  */}
+        <div className={styles.contentRow} style={{ minHeight: '450px' }}>
+          <PostEditor
+            content={formData.content} // 서버에서 받아온 HTML 데이터
+            setContent={handleContentChange} // 에디터에서 수정된 내용 저장
           />
         </div>
 
