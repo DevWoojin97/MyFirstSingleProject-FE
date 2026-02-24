@@ -12,6 +12,7 @@ export default function UpdatePost() {
 
   // 상세 페이지 모달에서 보낸 비밀번호 꺼내기
   const passwordFromState = location.state?.password;
+  const isMember = location.state?.isMember;
 
   const [formData, setFormData] = useState({
     title: '',
@@ -20,11 +21,12 @@ export default function UpdatePost() {
   });
 
   useEffect(() => {
-    if (!passwordFromState) {
-      toast.warn('비밀번호 인증이 필요합니다.');
+    // 💡 회원도 아니고(isMember X), 비밀번호 인증도 안 했으면(password X) 퇴장
+    if (!isMember && !passwordFromState) {
+      toast.warn('인증이 필요합니다.');
       navigate(`/post/${id}`);
     }
-  }, [passwordFromState, id, navigate]);
+  }, [isMember, passwordFromState, id, navigate]);
 
   useEffect(() => {
     const fetchPost = async () => {

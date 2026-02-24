@@ -9,9 +9,13 @@ export default function CreatePost() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
+  //로그인 상태 확인
+  const isLogin = !!localStorage.getItem('token');
+  const loggedInNickname = localStorage.getItem('nickname');
+
   const [formData, setFormData] = useState({
     title: '',
-    nickname: '',
+    nickname: isLogin ? loggedInNickname : '',
     password: '',
     content: '',
   });
@@ -35,25 +39,33 @@ export default function CreatePost() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.nickname.trim())
-      return toast.warn('닉네임을 입력해주세요! 👤');
-    if (!formData.password) return toast.warn('비밀번호를 입력해주세요! 🔒');
-    if (!formData.title.trim()) return toast.warn('제목을 입력해주세요! ✍️');
-    if (!formData.content.trim()) return toast.warn('내용을 입력해주세요! 📝');
+    // 비회원일 때만 닉네임/비밀번호 검사
+    if (!isLogin) {
+      if (!formData.nickname.trim())
+        return toast.warn('닉네임을 입력해주세요! 👤');
+      if (!formData.password) return toast.warn('비밀번호를 입력해주세요! 🔒');
 
-    // 3. 에디터 내용 검사 (Quill은 빈 값이면 '<p><br></p>'일 수 있음)
-    const isContentEmpty =
-      formData.content.replace(/<(.|\n)*?>/g, '').trim().length === 0;
-    if (isContentEmpty) return toast.warn('내용을 입력해주세요! 📝');
-
-    const pwLength = formData.password.length;
-    if (pwLength < 4 || pwLength > 8) {
-      toast.warn('비밀번호는 4자에서 8자 사이여야 합니다!');
-      return;
+      const pwLength = formData.password.length;
+      if (pwLength < 4 || pwLength > 8) {
+        return toast.warn('비밀번호는 4자에서 8자 사이여야 합니다!');
+      }
     }
+
+    if (!formData.title.trim()) return toast.warn('제목을 입력해주세요! ✍️');
+
+    const isContentEmpty =
+      !formData.content ||
+      formData.content.replace(/<(.|\n)*?>/g, '').trim().length === 0;
+
+    if (isContentEmpty) {
+      return toast.warn('내용을 입력해주세요! 📝');
+    }
+
     setIsLoading(true);
     try {
-      await createPost(formData);
+      const submitData = isLogin ? { ...formData, password: '' } : formData;
+
+      await createPost(submitData);
       toast.success('게시글이 등록되었습니다. ✨');
       navigate('/');
     } catch (error) {
@@ -73,25 +85,27 @@ export default function CreatePost() {
       </header>
 
       <form onSubmit={handleSubmit} className={styles.form}>
-        {/* 작성 정보 섹션 (닉네임, 비밀번호) */}
-        <div className={styles.infoInputRow}>
-          <input
-            type="text"
-            name="nickname"
-            placeholder="닉네임"
-            value={formData.nickname}
-            onChange={handleChange}
-            className={styles.smallInput}
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="비밀번호"
-            value={formData.password}
-            onChange={handleChange}
-            className={styles.smallInput}
-          />
-        </div>
+        {/*  비회원일 때만 닉네임/비밀번호 섹션 노출 */}
+        {!isLogin && (
+          <div className={styles.infoInputRow}>
+            <input
+              type="text"
+              name="nickname"
+              placeholder="닉네임"
+              value={formData.nickname}
+              onChange={handleChange}
+              className={styles.smallInput}
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="비밀번호"
+              value={formData.password}
+              onChange={handleChange}
+              className={styles.smallInput}
+            />
+          </div>
+        )}
 
         {/* 제목 섹션 */}
         <div className={styles.titleRow}>

@@ -24,15 +24,16 @@ function LoginBox() {
     e.preventDefault();
     try {
       const data = await loginRequest(loginData);
-      console.log('서버가 보내준 데이터 전체:', data);
       const nickname = data.user.nickname;
+      const userId = data.user.id;
       toast.success(`${nickname}님 환영합니다!`);
 
       // 로컬스토리지에 토큰과 닉네임 저장
       localStorage.setItem('token', data.token);
       localStorage.setItem('nickname', nickname);
+      localStorage.setItem('userId', userId);
       // 2. 유저 정보 저장 (UI 변경용)
-      setUser({ nickname });
+      setUser({ nickname, userId });
       // 로그인 성공 후 입력창 비우기
       setLoginData({ email: '', password: '' });
     } catch (error) {

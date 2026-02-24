@@ -20,6 +20,14 @@ export default function PostDetail() {
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  // 현재 로그인한 유저 정보 (Context나 LocalStorage에서 가져옴)
+  const currentUser = {
+    id: localStorage.getItem('userId'),
+    nickname: localStorage.getItem('nickname'),
+  };
+
+  const isMyPost =
+    post?.userId && Number(post.userId) === Number(currentUser.id);
 
   const fetchPost = useCallback(async () => {
     try {
@@ -38,8 +46,48 @@ export default function PostDetail() {
 
   // 핸들러들
   const handleGoToList = () => navigate('/');
-  const handleEditClick = () => setIsEditModalOpen(true);
-  const handleDeleteClick = () => setIsDeleteModalOpen(true);
+
+  const handleEditClick = () => {
+    const loggedInId = localStorage.getItem('userId'); // 로그인 시 저장한 내 ID
+    const postAuthorId = post?.authorId; // DB에서 가져온 글쓴이 ID
+    // 둘 다 존재하고 값이 같으면 내 글!
+    const isOwner =
+      loggedInId && postAuthorId && String(loggedInId) === String(postAuthorId);
+    if (isOwner) {
+      // ✅ 내 글이면 모달 없이 즉시 이동
+      // state에 isMember를 실어 보내면 수정 페이지에서 '비밀번호' 칸을 숨기기 편합니다.
+      navigate(`/post/${id}/edit`, { state: { isMember: true } });
+    } else if (post?.authorId) {
+      // ❌ 남의 회원 글이면
+      alert('본인의 글만 수정할 수 있습니다.');
+    } else {
+      // 👤 익명 글이면 비밀번호 모달 오픈
+      setIsEditModalOpen(true);
+    }
+  };
+  const handleDeleteClick = () => {
+    const loggedInId = localStorage.getItem('userId'); // 로그인 시 저장한 내 ID
+    const postAuthorId = post?.authorId; // DB에서 가져온 글쓴이 ID
+
+    console.log('비교 확인:', { loggedInId, postAuthorId });
+
+    // 둘 다 존재하고 값이 같으면 내 글!
+    const isOwner =
+      loggedInId && postAuthorId && String(loggedInId) === String(postAuthorId);
+
+    if (isOwner) {
+      // 이제 모달 없이 바로 확인창 띄우기 (또는 아까 만든 isMember 모달)
+      if (window.confirm('정말 삭제하시겠습니까?')) {
+        handleActualDelete();
+      }
+    } else if (post?.authorId) {
+      // 💡 회원 글인데 내가 주인이 아니면 모달을 띄울 필요가 없음!
+      alert('본인의 글만 삭제할 수 있습니다.');
+    } else {
+      // 익명 글이거나 남의 글이면 모달(비밀번호 입력) 띄우기
+      setIsDeleteModalOpen(true);
+    }
+  };
 
   const handleActualEdit = async (password) => {
     try {
@@ -57,7 +105,7 @@ export default function PostDetail() {
     }
   };
 
-  const handleActualDelete = async (password) => {
+  const handleActualDelete = async (password = null) => {
     try {
       await deletePost(id, password);
       setIsDeleteModalOpen(false);
@@ -147,12 +195,17 @@ export default function PostDetail() {
           </button>
         </div>
         <div className={styles.btnRight}>
-          <button onClick={handleEditClick} className={styles.btnBlue}>
-            수정
-          </button>
-          <button onClick={handleDeleteClick} className={styles.btnGray}>
-            삭제
-          </button>
+          {/* 본인 글이거나 익명 글일 때만 수정/삭제 버튼 노출 (남의 회원글이면 숨김) */}
+          {(isMyPost || !post.userId) && (
+            <>
+              <button onClick={handleEditClick} className={styles.btnBlue}>
+                수정
+              </button>
+              <button onClick={handleDeleteClick} className={styles.btnGray}>
+                삭제
+              </button>
+            </>
+          )}
         </div>
       </div>
 

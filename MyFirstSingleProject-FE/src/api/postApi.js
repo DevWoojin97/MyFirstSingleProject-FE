@@ -26,7 +26,13 @@ export const getPostById = async (id) => {
 // 게시글 생성
 export const createPost = async (postData) => {
   try {
-    const response = await api.post('/posts', postData);
+    const token = localStorage.getItem('token');
+    const response = await api.post('/posts', postData, {
+      headers: {
+        // 토큰이 있으면 실어 보내고, 없으면 안 보냄 (백엔드에서 체크)
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
     return response.data;
   } catch (error) {
     console.error('게시글 작성 에러:', error);
@@ -36,18 +42,31 @@ export const createPost = async (postData) => {
 
 // 게시글 삭제
 export const deletePost = async (id, password) => {
+  const token = localStorage.getItem('token');
   const response = await api.delete(`/posts/${id}`, {
     data: { password },
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
   });
   return response.data;
 };
 
 export const updatePost = async (id, password, postData) => {
   try {
-    const response = await api.patch(`/posts/${Number(id)}`, {
-      password,
-      ...postData,
-    });
+    const token = localStorage.getItem('token');
+    const response = await api.patch(
+      `/posts/${Number(id)}`,
+      {
+        password,
+        ...postData,
+      },
+      {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      },
+    );
     return response.data;
   } catch (error) {
     console.error('게시글 수정 에러:', error);
