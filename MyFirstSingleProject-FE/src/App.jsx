@@ -5,7 +5,7 @@ import PostDetail from './domains/postDetail/PostDetail';
 import UpdatePost from './domains/updatePost/UpdatePost';
 import { ToastContainer } from 'react-toastify';
 import Signup from './domains/auth/Signup';
-import Mypage from './domains/mypage/mypage';
+import Mypage from './domains/mypage/Mypage';
 
 export default function App() {
   return (
