@@ -5,6 +5,7 @@ import PostDetail from './domains/postDetail/PostDetail';
 import UpdatePost from './domains/updatePost/UpdatePost';
 import { ToastContainer } from 'react-toastify';
 import Signup from './domains/auth/Signup';
+import Mypage from './domains/mypage/mypage';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/post/new" element={<CreatePost />} />
         <Route path="/post/:id" element={<PostDetail />} />
         <Route path="/post/:id/edit" element={<UpdatePost />} />
+        <Route path="/mypage" element={<Mypage />} />
       </Routes>
     </>
   );

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
 import Pagination from '@/components/Pagination/Pagination';
+import LoginBox from '@/domains/auth/LoginBox';
 
 const DEBOUNCE_DELAY = 500; // 사용자가 입력을 멈추고 0.5초 뒤에 실행
 const LIMIT = 10; // 한 페이지에 보여줄 게시글 수
@@ -57,78 +58,88 @@ const Home = () => {
         <h1>우진이의 커뮤니티 게시판</h1>
       </header>
 
-      {/* 게시글 테이블 영역 */}
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th className={styles.num}>번호</th>
-            <th className={styles.title}>제목</th>
-            <th className={styles.writer}>글쓴이</th>
-            <th className={styles.date}>작성일</th>
-            <th className={styles.view}>조회</th>
-          </tr>
-        </thead>
-        <tbody>
-          {posts.length > 0 ? (
-            posts.map((post) => (
-              <tr
-                key={post.id}
-                className={styles.tr}
-                onClick={() => navigate(`/post/${post.id}`)} // 3. 행 전체 클릭 시 이동
-                style={{ cursor: 'pointer' }} // 마우스 올리면 손가락 모양
-              >
-                <td className={styles.num}>{post.id}</td>
-                <td className={styles.titleText}>
-                  {/* 1. 아이콘 (제목 좌측) */}
-                  <span
-                    className={
-                      post.hasImage ? styles.cameraIcon : styles.talkIcon
-                    }
-                  >
-                    {post.hasImage ? '📷 ' : '💬 '}
-                  </span>
-                  {post.title}
-                  {/* 댓글이 있을 때만 괄호와 함께 개수 표시 */}
-                  {post.commentCount > 0 && (
-                    <span className={styles.commentCount}>
-                      [{post.commentCount}]
-                    </span>
-                  )}
-                </td>
-                <td className={styles.writer}>{post.nickname}</td>
-                <td className={styles.date}>
-                  {new Date(post.createdAt).toLocaleDateString('ko-KR', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                  })}
-                </td>
-                <td className={styles.view}>{post.view}</td>
+      <div className={styles.mainWrapper}>
+        <section className={styles.contentSection}>
+          {/* 게시글 테이블 영역 */}
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th className={styles.num}>번호</th>
+                <th className={styles.title}>제목</th>
+                <th className={styles.writer}>글쓴이</th>
+                <th className={styles.date}>작성일</th>
+                <th className={styles.view}>조회</th>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" className={styles.noData}>
-                검색 결과나 게시글이 없습니다.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {posts.length > 0 ? (
+                posts.map((post) => (
+                  <tr
+                    key={post.id}
+                    className={styles.tr}
+                    onClick={() => navigate(`/post/${post.id}`)} // 3. 행 전체 클릭 시 이동
+                    style={{ cursor: 'pointer' }} // 마우스 올리면 손가락 모양
+                  >
+                    <td className={styles.num}>{post.id}</td>
+                    <td className={styles.titleText}>
+                      {/* 1. 아이콘 (제목 좌측) */}
+                      <span
+                        className={
+                          post.hasImage ? styles.cameraIcon : styles.talkIcon
+                        }
+                      >
+                        {post.hasImage ? '📷 ' : '💬 '}
+                      </span>
+                      {post.title}
+                      {/* 댓글이 있을 때만 괄호와 함께 개수 표시 */}
+                      {post.commentCount > 0 && (
+                        <span className={styles.commentCount}>
+                          [{post.commentCount}]
+                        </span>
+                      )}
+                    </td>
+                    <td className={styles.writer}>{post.nickname}</td>
+                    <td className={styles.date}>
+                      {new Date(post.createdAt).toLocaleDateString('ko-KR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                      })}
+                    </td>
+                    <td className={styles.view}>{post.view}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className={styles.noData}>
+                    검색 결과나 게시글이 없습니다.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
 
-      {/* 글쓰기 버튼 영역 */}
-      <div className={styles.buttonWrapper}>
-        <Link to={'/post/new'}>
-          <button className={styles.writeBtn}>글쓰기</button>
-        </Link>
+          {/* 글쓰기 버튼 영역 */}
+          <div className={styles.buttonWrapper}>
+            <Link to={'/post/new'}>
+              <button className={styles.writeBtn}>글쓰기</button>
+            </Link>
+          </div>
+
+          {/* 페이지네이션 컴포넌트 */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        </section>
+
+        {/* 우측 사이드바 영역 추가 */}
+        <aside className={styles.sidebar}>
+          <LoginBox />
+        </aside>
       </div>
 
-      {/* 페이지네이션 컴포넌트 */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={(page) => setCurrentPage(page)}
-      />
       {/* 검색 바 영역 */}
       <div className={styles.searchWrapper}>
         <input

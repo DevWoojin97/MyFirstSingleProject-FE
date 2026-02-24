@@ -154,6 +154,21 @@
   margin-right: 8px; /* 제목과의 간격 */
   flex-shrink: 0;
 }
+.mainWrapper {
+  display: flex;
+  gap: 20px; /* 게시판과 로그인박스 사이 간격 */
+  margin-top: 10px;
+}
+
+.contentSection {
+  flex: 1; /* 게시판이 왼쪽 남는 공간을 다 차지함 */
+  min-width: 0; /* flex 아이템 찌그러짐 방지 */
+}
+
+.sidebar {
+  width: 290px; /* 디시 표준 로그인 박스 너비 */
+  flex-shrink: 0; /* 너비 고정 */
+}
 
 /* --- 모바일 대응 (반응형) --- */
 @media (max-width: 768px) {
@@ -218,6 +233,14 @@
 
   .buttonWrapper {
     padding-right: 10px;
+  }
+  .mainWrapper {
+    flex-direction: column; /* 모바일에서는 위아래로 배치 */
+  }
+
+  .sidebar {
+    width: 100%; /* 모바일에서는 꽉 차게 */
+    order: -1; /* [선택] 모바일에서 로그인 박스를 게시판보다 위에 올리고 싶을 때 */
   }
 }
 

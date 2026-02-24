@@ -19,9 +19,24 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const { email, password, nickname } = formData;
     // 간단한 유효성 검사
     if (!formData.email || !formData.password || !formData.nickname) {
       return toast.warn('모든 빈칸을 채워주세요!');
+    }
+    // 1. 이메일 형식 검사 (정규표현식)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return toast.error('올바른 이메일 형식이 아닙니다.');
+    }
+    // 2. 비밀번호 강도 검사 (예: 8자 이상, 영문, 숫자 포함)
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return toast.error('비밀번호는 8자 이상, 영문과 숫자를 포함해야 합니다.');
+    }
+    // 3. 닉네임 길이 검사
+    if (nickname.length < 2 || nickname.length > 8) {
+      return toast.error('닉네임은 2~8자 사이여야 합니다.');
     }
     try {
       // authApi 함수 호출
