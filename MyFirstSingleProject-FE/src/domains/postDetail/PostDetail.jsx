@@ -27,7 +27,7 @@ export default function PostDetail() {
   };
 
   const isMyPost =
-    post?.userId && Number(post.userId) === Number(currentUser.id);
+    post?.authorId && Number(post.authorId) === Number(currentUser.id);
 
   const fetchPost = useCallback(async () => {
     try {
@@ -59,7 +59,7 @@ export default function PostDetail() {
       navigate(`/post/${id}/edit`, { state: { isMember: true } });
     } else if (post?.authorId) {
       // ❌ 남의 회원 글이면
-      alert('본인의 글만 수정할 수 있습니다.');
+      toast.warn('본인의 글만 수정할 수 있습니다. ✋');
     } else {
       // 👤 익명 글이면 비밀번호 모달 오픈
       setIsEditModalOpen(true);
@@ -76,13 +76,10 @@ export default function PostDetail() {
       loggedInId && postAuthorId && String(loggedInId) === String(postAuthorId);
 
     if (isOwner) {
-      // 이제 모달 없이 바로 확인창 띄우기 (또는 아까 만든 isMember 모달)
-      if (window.confirm('정말 삭제하시겠습니까?')) {
-        handleActualDelete();
-      }
+      setIsDeleteModalOpen(true);
     } else if (post?.authorId) {
       // 💡 회원 글인데 내가 주인이 아니면 모달을 띄울 필요가 없음!
-      alert('본인의 글만 삭제할 수 있습니다.');
+      toast.warn('본인의 글만 삭제할 수 있습니다. ✋');
     } else {
       // 익명 글이거나 남의 글이면 모달(비밀번호 입력) 띄우기
       setIsDeleteModalOpen(true);
@@ -217,7 +214,9 @@ export default function PostDetail() {
       />
       <PasswordModal
         isOpen={isDeleteModalOpen}
-        title="게시글 삭제"
+        // ✅ 내 글(회원)이면 비번 입력창 숨기고, 익명글이면 보여줌
+        isPasswordRequired={!isMyPost && !post.authorId}
+        title={isMyPost ? '정말 삭제하시겠습니까?' : '게시글 삭제 비밀번호'}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleActualDelete}
       />
