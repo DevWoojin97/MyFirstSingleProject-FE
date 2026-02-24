@@ -4,6 +4,7 @@ import CreatePost from './domains/createPost/CreatePost';
 import PostDetail from './domains/postDetail/PostDetail';
 import UpdatePost from './domains/updatePost/UpdatePost';
 import { ToastContainer } from 'react-toastify';
+import Signup from './domains/auth/Signup';
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
       />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/post/new" element={<CreatePost />} />
         <Route path="/post/:id" element={<PostDetail />} />
         <Route path="/post/:id/edit" element={<UpdatePost />} />
