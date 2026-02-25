@@ -58,7 +58,7 @@ function LoginBox() {
               <span className={styles.nickname}>
                 <strong>{user.nickname}</strong>님
               </span>
-              <span className={styles.welcomeMsg}>반갑습니다!</span>
+              <span className={styles.welcomeMsg}>하이요~ㅎㅎ</span>
             </div>
           </div>
 

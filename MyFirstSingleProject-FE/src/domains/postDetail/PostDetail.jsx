@@ -20,6 +20,7 @@ export default function PostDetail() {
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   // 현재 로그인한 유저 정보 (Context나 LocalStorage에서 가져옴)
   const currentUser = {
     id: localStorage.getItem('userId'),
@@ -181,6 +182,7 @@ export default function PostDetail() {
       {/* 분리한 댓글 섹션 */}
       <CommentSection
         comments={post.comments}
+        currentUser={currentUser}
         onCommentSubmit={handleCommentSubmit}
         onCommentDelete={handleDeleteComment}
       />
