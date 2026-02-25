@@ -1,9 +1,12 @@
 import { getPosts } from '@/api/postApi';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
 import Pagination from '@/components/Pagination/Pagination';
-import LoginBox from '@/domains/auth/LoginBox';
+import VerifiedIcon from '@/components/Icons/VerifiedIcon';
+import clsx from 'clsx';
+import LoginSidebar from '@/domains/login/LoginSidebar';
+import Header from '@/components/Header/Header';
 
 const DEBOUNCE_DELAY = 500; // 사용자가 입력을 멈추고 0.5초 뒤에 실행
 const LIMIT = 10; // 한 페이지에 보여줄 게시글 수
@@ -54,9 +57,7 @@ const Home = () => {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1>우진이의 커뮤니티 게시판</h1>
-      </header>
+      <Header />
 
       <div className={styles.mainWrapper}>
         <section className={styles.contentSection}>
@@ -98,7 +99,22 @@ const Home = () => {
                         </span>
                       )}
                     </td>
-                    <td className={styles.writer}>{post.nickname}</td>
+                    <td className={styles.writer}>
+                      <div
+                        className={clsx(
+                          styles.nicknameContainer,
+                          post.authorId && styles.isFixed,
+                        )}
+                      >
+                        {post.nickname}
+                        {/* 🌟 회원일 경우 아이콘 표시 */}
+                        {post.authorId && (
+                          <span className={styles.fixedBadge}>
+                            <VerifiedIcon />
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className={styles.date}>
                       {new Date(post.createdAt).toLocaleDateString('ko-KR', {
                         year: 'numeric',
@@ -136,7 +152,7 @@ const Home = () => {
 
         {/* 우측 사이드바 영역 추가 */}
         <aside className={styles.sidebar}>
-          <LoginBox />
+          <LoginSidebar />
         </aside>
       </div>
 

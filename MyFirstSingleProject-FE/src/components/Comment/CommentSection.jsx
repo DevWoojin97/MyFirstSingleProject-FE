@@ -2,6 +2,8 @@ import { useState } from 'react';
 import styles from './CommentSection.module.css';
 import PasswordModal from '../PasswordModal/PasswordModal';
 import { toast } from 'react-toastify';
+import VerifiedIcon from '../Icons/VerifiedIcon';
+import clsx from 'clsx';
 
 export default function CommentSection({
   comments,
@@ -94,8 +96,18 @@ export default function CommentSection({
               <div key={comment.id} className={styles.commentItem}>
                 <div className={styles.commentMeta}>
                   <div className={styles.metaLeft}>
-                    <span className={styles.commentNickname}>
+                    <span
+                      className={clsx(
+                        styles.commentNickname,
+                        comment.authorId && styles.isFixed,
+                      )}
+                    >
                       {comment.nickname}
+                      {comment.authorId && (
+                        <span className={styles.fixedBadge} title="인증된 회원">
+                          <VerifiedIcon />
+                        </span>
+                      )}
                     </span>
                     <span className={styles.commentDate}>
                       {new Date(comment.createdAt).toLocaleString()}

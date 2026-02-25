@@ -12,6 +12,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styles from './PostDetail.module.css';
 import CommentSection from '@/components/Comment/CommentSection';
+import VerifiedIcon from '@/components/Icons/VerifiedIcon';
+import clsx from 'clsx';
 
 export default function PostDetail() {
   const { id } = useParams();
@@ -170,7 +172,18 @@ export default function PostDetail() {
         <h2 className={styles.title}>{post.title}</h2>
         <div className={styles.info}>
           <div className={styles.infoLeft}>
-            <span className={styles.nickname}>{post.nickname}</span>
+            <span
+              className={clsx(styles.nickname, post.authorId && styles.isFixed)}
+            >
+              {post.nickname}
+
+              {/* 🌟 상세 페이지에도 고정닉 마크 추가 */}
+              {post.authorId && (
+                <span className={styles.fixedBadge} title="인증 회원">
+                  <VerifiedIcon />
+                </span>
+              )}
+            </span>
             <span className={styles.date}>
               {new Date(post.createdAt).toLocaleString()}
             </span>

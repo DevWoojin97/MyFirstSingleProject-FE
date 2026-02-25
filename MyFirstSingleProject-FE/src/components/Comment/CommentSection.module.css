@@ -21,11 +21,32 @@
   font-weight: bold;
   font-size: 13px;
   margin-right: 10px;
+  /* 🌟 추가: 내부 요소들을 가로로 나란히 배치 */
+  display: inline-flex;
+  align-items: center;
+  gap: 4px; /* 닉네임과 뱃지 사이 간격 */
+  vertical-align: middle;
+  color: #333;
+}
+/* 🌟 고정닉(회원)일 때의 스타일 */
+.isFixed {
+  color: #475569;
+}
+
+.fixedBadge {
+  display: flex;
+  align-items: center;
+  color: #94a3b8;
+}
+.fixedBadge svg {
+  width: 12px;
+  height: 12px;
 }
 
 .commentDate {
-  font-size: 11px;
-  color: #999;
+  font-size: 12px;
+  color: #888;
+  margin-left: 8px;
 }
 
 .commentText {

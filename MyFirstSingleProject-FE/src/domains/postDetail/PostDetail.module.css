@@ -28,10 +28,30 @@
 
 .nickname {
   font-weight: bold;
+  font-size: 15px; /* 상세 페이지에 맞게 살짝 키움 */
   color: #333;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px; /* 텍스트와 아이콘 사이 간격 */
   margin-right: 15px;
 }
+/* 🌟 고정닉(회원)일 때의 은은한 스타일 */
+.isFixed {
+  color: #475569; /* 통일된 감청색 */
+}
 
+.fixedBadge {
+  display: flex;
+  align-items: center;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+/* 게시글 정보 왼쪽 영역 정렬 */
+.infoLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* 닉네임 영역과 날짜 사이 간격 */
+}
 .date {
   color: #999;
 }
