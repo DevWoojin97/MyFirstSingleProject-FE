@@ -21,14 +21,21 @@ export default function PostDetail() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  // 현재 로그인한 유저 정보 (Context나 LocalStorage에서 가져옴)
-  const currentUser = {
-    id: localStorage.getItem('userId'),
-    nickname: localStorage.getItem('nickname'),
-  };
+  const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('userId');
+
+  const currentUser =
+    token && userId
+      ? {
+          id: userId,
+          nickname: localStorage.getItem('nickname'),
+        }
+      : null;
 
   const isMyPost =
-    post?.authorId && Number(post.authorId) === Number(currentUser.id);
+    post?.authorId &&
+    currentUser?.id &&
+    String(post.authorId) === String(currentUser.id);
 
   const fetchPost = useCallback(async () => {
     try {
@@ -217,7 +224,7 @@ export default function PostDetail() {
       <PasswordModal
         isOpen={isDeleteModalOpen}
         // ✅ 내 글(회원)이면 비번 입력창 숨기고, 익명글이면 보여줌
-        isPasswordRequired={!isMyPost && !post.authorId}
+        isPasswordRequired={!isMyPost}
         title={isMyPost ? '정말 삭제하시겠습니까?' : '게시글 삭제 비밀번호'}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleActualDelete}

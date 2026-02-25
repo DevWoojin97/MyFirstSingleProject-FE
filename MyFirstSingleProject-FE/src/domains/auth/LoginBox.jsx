@@ -43,9 +43,11 @@ function LoginBox() {
   };
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
     localStorage.removeItem('nickname');
     setUser(null);
     toast.info('로그아웃 되었습니다.');
+    window.location.reload();
   };
   if (user) {
     return (

@@ -13,11 +13,14 @@ export default function PasswordModal({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    onConfirm(isPasswordRequired ? password : null);
+    setIsLoading(true);
+    await onConfirm(isPasswordRequired ? password : null);
+    setIsLoading(false);
     setPassword('');
   };
+
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>

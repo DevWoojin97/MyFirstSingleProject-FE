@@ -1,6 +1,5 @@
 import api from './axios';
 
-const token = localStorage.getItem('token');
 //게시글 전체목록 조회
 export const getPosts = async ({ page, limit, search, sort, order } = {}) => {
   try {
@@ -77,6 +76,7 @@ export const updatePost = async (id, password, postData) => {
 
 //댓글 작성
 export const createComment = async (postId, commentData) => {
+  const token = localStorage.getItem('token');
   // commentData = { nickname, password, content }
   const response = await api.post(`/posts/${postId}/comments`, commentData, {
     headers: {
@@ -88,9 +88,19 @@ export const createComment = async (postId, commentData) => {
 };
 // 7. 댓글 삭제
 export const deleteComment = async (commentId, password) => {
-  const response = await api.patch(`/posts/comments/${commentId}`, {
-    password,
-  });
+  const token = localStorage.getItem('token');
+  const response = await api.patch(
+    `/posts/comments/${commentId}`,
+    {
+      password,
+    },
+    {
+      headers: {
+        // 토큰이 있으면 실어 보내고, 없으면 안 보냄 (백엔드에서 체크)
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    },
+  );
   return response.data;
 };
 // 비밀번호 검증용 (모달)
