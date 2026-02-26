@@ -58,7 +58,6 @@ export default function CommentSection({
     const success = await onCommentDelete(selectedCommentId, password);
     if (success) {
       setIsDeleteModalOpen(false);
-      toast.success('댓글이 성공적으로 삭제되었습니다! 🗑️');
     } else {
       toast.error('삭제에 실패했습니다. 비밀번호를 확인해주세요.');
     }

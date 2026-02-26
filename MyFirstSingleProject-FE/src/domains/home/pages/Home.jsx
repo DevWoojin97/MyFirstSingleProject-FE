@@ -18,11 +18,13 @@ const Home = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState(''); // 입력 필드 및 검색어 상태
   const [totalCount, setTotalCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true); // 처음엔 로딩 중!
 
   useEffect(() => {
     // 1. 디바운스 타이머 설정: API 호출 횟수를 줄여 서버 부하 방지
     const debounceTimer = setTimeout(() => {
       const fetchPosts = async () => {
+        setIsLoading(true); // 로딩 시작
         try {
           const result = await getPosts({
             search: searchTerm,
@@ -39,6 +41,8 @@ const Home = () => {
           setTotalPages(result.totalPages || 1);
         } catch (error) {
           console.error('데이터 로딩 실패:', error);
+        } finally {
+          setIsLoading(false); // 성공이든 실패든 로딩 off
         }
       };
 
@@ -73,17 +77,27 @@ const Home = () => {
               </tr>
             </thead>
             <tbody>
-              {posts.length > 0 ? (
+              {isLoading ? (
+                /* 1. 로딩 중일 때 표시할 UI */
+                <tr>
+                  <td colSpan="5" className={styles.loadingTd}>
+                    <div className={styles.spinnerBox}>
+                      <div className={styles.spinner}></div>
+                      <p>게시글을 불러오는 중입니다...</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : posts.length > 0 ? (
+                /* 2. 로딩이 끝났고 데이터가 있을 때 */
                 posts.map((post) => (
                   <tr
                     key={post.id}
                     className={styles.tr}
-                    onClick={() => navigate(`/post/${post.id}`)} // 3. 행 전체 클릭 시 이동
-                    style={{ cursor: 'pointer' }} // 마우스 올리면 손가락 모양
+                    onClick={() => navigate(`/post/${post.id}`)}
+                    style={{ cursor: 'pointer' }}
                   >
                     <td className={styles.num}>{post.id}</td>
                     <td className={styles.titleText}>
-                      {/* 1. 아이콘 (제목 좌측) */}
                       <span
                         className={
                           post.hasImage ? styles.cameraIcon : styles.talkIcon
@@ -92,7 +106,6 @@ const Home = () => {
                         {post.hasImage ? '📷 ' : '💬 '}
                       </span>
                       {post.title}
-                      {/* 댓글이 있을 때만 괄호와 함께 개수 표시 */}
                       {post.commentCount > 0 && (
                         <span className={styles.commentCount}>
                           [{post.commentCount}]
@@ -107,7 +120,6 @@ const Home = () => {
                         )}
                       >
                         {post.nickname}
-                        {/* 🌟 회원일 경우 아이콘 표시 */}
                         {post.authorId && (
                           <span className={styles.fixedBadge}>
                             <VerifiedIcon />
@@ -116,16 +128,13 @@ const Home = () => {
                       </div>
                     </td>
                     <td className={styles.date}>
-                      {new Date(post.createdAt).toLocaleDateString('ko-KR', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                      })}
+                      {new Date(post.createdAt).toLocaleDateString('ko-KR')}
                     </td>
                     <td className={styles.view}>{post.view}</td>
                   </tr>
                 ))
               ) : (
+                /* 3. 로딩이 끝났는데 데이터가 진짜 없을 때 */
                 <tr>
                   <td colSpan="5" className={styles.noData}>
                     검색 결과나 게시글이 없습니다.

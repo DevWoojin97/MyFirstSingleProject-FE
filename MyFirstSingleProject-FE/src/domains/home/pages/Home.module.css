@@ -140,6 +140,46 @@
   align-items: center;
   color: #94a3b8; /* 아까 코드에 있던 그 은은한 회색 */
 }
+.loadingTd {
+  height: 300px; /* 로딩 중일 때 테이블이 너무 찌그러지지 않게 높이 고정 */
+  vertical-align: middle;
+  text-align: center;
+}
+
+.spinnerBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  color: #888;
+  font-size: 14px;
+}
+
+/* 단순한 원형 스피너 */
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db; /* 포인트 컬러 */
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.noData {
+  padding: 100px 0;
+  text-align: center;
+  color: #999;
+}
 
 /* --- 모바일 대응 --- */
 @media (max-width: 768px) {
