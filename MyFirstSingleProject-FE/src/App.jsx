@@ -7,10 +7,11 @@ import { ToastContainer } from 'react-toastify';
 import Signup from './domains/auth/Signup';
 import Mypage from './domains/mypage/Mypage';
 import Login from './domains/login/Login';
+import { AuthProvider } from './contexts/AuthContext';
 
 export default function App() {
   return (
-    <>
+    <AuthProvider>
       <ToastContainer
         position="top-right" // 위치
         autoClose={3000} // 3초 뒤 자동 종료
@@ -25,6 +26,6 @@ export default function App() {
         <Route path="/post/:id/edit" element={<UpdatePost />} />
         <Route path="/mypage" element={<Mypage />} />
       </Routes>
-    </>
+    </AuthProvider>
   );
 }

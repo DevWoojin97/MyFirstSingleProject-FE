@@ -14,25 +14,19 @@ import styles from './PostDetail.module.css';
 import CommentSection from '@/components/Comment/CommentSection';
 import VerifiedIcon from '@/components/Icons/VerifiedIcon';
 import clsx from 'clsx';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function PostDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { userId, nickname, isLoggedIn } = useAuth();
+
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const token = localStorage.getItem('token');
-  const userId = localStorage.getItem('userId');
-
-  const currentUser =
-    token && userId
-      ? {
-          id: userId,
-          nickname: localStorage.getItem('nickname'),
-        }
-      : null;
+  const currentUser = isLoggedIn ? { id: userId, nickname } : null;
 
   const isMyPost =
     post?.authorId &&

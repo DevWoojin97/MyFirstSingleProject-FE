@@ -4,15 +4,18 @@ import styles from './UpdatePost.module.css';
 import { getPostById, updatePost } from '@/api/postApi';
 import { toast } from 'react-toastify';
 import PostEditor from '@/components/PostEditor/PostEditor';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function UpdatePost() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { isLoggedIn } = useAuth();
+
   // 상세 페이지 모달에서 보낸 비밀번호 꺼내기
   const passwordFromState = location.state?.password;
-  const isMember = location.state?.isMember;
+  const isMember = location.state?.isMember || isLoggedIn;
 
   const [formData, setFormData] = useState({
     title: '',

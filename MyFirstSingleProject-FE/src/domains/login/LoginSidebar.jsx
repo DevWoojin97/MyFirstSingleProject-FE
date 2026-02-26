@@ -1,25 +1,16 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './LoginSidebar.module.css';
+import { useAuth } from '@/contexts/AuthContext';
 
 const LoginSidebar = () => {
   const navigate = useNavigate();
-
-  const [user, setUser] = useState(() => {
-    const savedToken = localStorage.getItem('token');
-    const savedNickname = localStorage.getItem('nickname');
-    return savedToken && savedNickname ? { nickname: savedNickname } : null;
-  });
+  const { isLoggedIn, nickname, logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('nickname');
-    setUser(null);
-    window.location.reload();
+    logout();
   };
 
-  if (user) {
+  if (isLoggedIn) {
     return (
       <div className={styles.sidebarContainer}>
         <div className={styles.userBox}>
@@ -33,7 +24,7 @@ const LoginSidebar = () => {
             </div>
             <div className={styles.userText}>
               <span className={styles.nickname}>
-                <strong>{user.nickname}</strong>님
+                <strong>{nickname}</strong>님
               </span>
               <span className={styles.welcomeMsg}>하이요~ㅎㅎ</span>
             </div>

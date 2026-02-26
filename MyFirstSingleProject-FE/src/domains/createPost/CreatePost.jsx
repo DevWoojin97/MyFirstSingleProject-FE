@@ -1,24 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './CreatePost.module.css';
 import { createPost } from '@/api/postApi';
 import { toast } from 'react-toastify'; // alert 대신 toast 사용
 import PostEditor from '@/components/PostEditor/PostEditor';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function CreatePost() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  //로그인 상태 확인
-  const isLogin = !!localStorage.getItem('token');
-  const loggedInNickname = localStorage.getItem('nickname');
+  const { isLoggedIn, nickname: loggedInNickname } = useAuth();
 
   const [formData, setFormData] = useState({
     title: '',
-    nickname: isLogin ? loggedInNickname : '',
+    nickname: isLoggedIn ? loggedInNickname : '',
     password: '',
     content: '',
   });
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      setFormData((prev) => ({ ...prev, nickname: loggedInNickname }));
+    }
+  }, [isLoggedIn, loggedInNickname]);
 
   // 일반 input 변경 핸들러
   const handleChange = (e) => {
@@ -40,7 +45,7 @@ export default function CreatePost() {
     e.preventDefault();
 
     // 비회원일 때만 닉네임/비밀번호 검사
-    if (!isLogin) {
+    if (!isLoggedIn) {
       if (!formData.nickname.trim())
         return toast.warn('닉네임을 입력해주세요! 👤');
       if (!formData.password) return toast.warn('비밀번호를 입력해주세요! 🔒');
@@ -63,7 +68,7 @@ export default function CreatePost() {
 
     setIsLoading(true);
     try {
-      const submitData = isLogin ? { ...formData, password: '' } : formData;
+      const submitData = isLoggedIn ? { ...formData, password: '' } : formData;
 
       await createPost(submitData);
       toast.success('게시글이 등록되었습니다. ✨');
@@ -86,7 +91,7 @@ export default function CreatePost() {
 
       <form onSubmit={handleSubmit} className={styles.form}>
         {/*  비회원일 때만 닉네임/비밀번호 섹션 노출 */}
-        {!isLogin && (
+        {!isLoggedIn && (
           <div className={styles.infoInputRow}>
             <input
               type="text"

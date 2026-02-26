@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './Header.module.css';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -8,14 +9,12 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation(); // 페이지 이동 감지용
 
-  const isLogin = !!localStorage.getItem('token');
-  const nickname = localStorage.getItem('nickname');
+  const { isLoggedIn, nickname, logout, login } = useAuth();
 
   const handleLogout = () => {
-    localStorage.clear();
+    logout();
     setIsMenuOpen(false);
     navigate('/');
-    window.location.reload();
   };
 
   // 바깥 클릭 감지 로직 (여기 두면 Header가 어디서 쓰이든 작동함)
@@ -37,7 +36,7 @@ const Header = () => {
 
       {/* PC에서는 CSS로 숨길 모바일 전용 영역 */}
       <div className={styles.mobileHeaderRight}>
-        {isLogin ? (
+        {isLoggedIn ? (
           <div className={styles.userContainer} ref={dropdownRef}>
             <div
               className={styles.userInfoWrapper}
