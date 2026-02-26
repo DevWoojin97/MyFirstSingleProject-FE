@@ -1,6 +1,5 @@
 import styles from './Signup.module.css';
 import { useState } from 'react';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import { signupRequest } from '@/api/authApi';
 import { useNavigate } from 'react-router-dom';

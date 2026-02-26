@@ -40,11 +40,6 @@ export default function CommentSection({
     // 1. 내 ID 찾기 (userId와 id 둘 다 대응하도록 안전하게 처리)
     const myId = currentUser?.userId || currentUser?.id;
 
-    console.log('--- 삭제 버튼 클릭 분석 ---');
-    console.log('1. 내 계정 ID (myId):', myId, typeof myId);
-    console.log('2. 댓글 작성자 ID (authorId):', authorId, typeof authorId);
-    console.log('3. 로그인 여부 (isLoggedIn):', isLoggedIn);
-
     // 2. 비교 로직 (String으로 변환하여 타입 불일치 방지)
     // authorId가 존재하고, 내 ID와 일치할 때만 true
     const isMyComment =
@@ -52,9 +47,6 @@ export default function CommentSection({
       authorId !== null &&
       authorId !== undefined &&
       String(myId) === String(authorId);
-
-    console.log('4. 최종 비교 결과 (isMyComment):', isMyComment);
-    console.log('---------------------------');
 
     // 3. 익명 여부 판별 (authorId가 아예 없는 경우)
     const isAnonymous = authorId === null || authorId === undefined;

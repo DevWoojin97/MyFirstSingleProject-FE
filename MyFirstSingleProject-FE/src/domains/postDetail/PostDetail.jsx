@@ -79,8 +79,6 @@ export default function PostDetail() {
     const loggedInId = localStorage.getItem('userId'); // 로그인 시 저장한 내 ID
     const postAuthorId = post?.authorId; // DB에서 가져온 글쓴이 ID
 
-    console.log('비교 확인:', { loggedInId, postAuthorId });
-
     // 둘 다 존재하고 값이 같으면 내 글!
     const isOwner =
       loggedInId && postAuthorId && String(loggedInId) === String(postAuthorId);
