@@ -194,7 +194,6 @@ export default function PostDetail() {
       {/* 분리한 댓글 섹션 */}
       <CommentSection
         comments={post.comments}
-        currentUser={currentUser}
         onCommentSubmit={handleCommentSubmit}
         onCommentDelete={handleDeleteComment}
       />

@@ -4,13 +4,15 @@ import PasswordModal from '../PasswordModal/PasswordModal';
 import { toast } from 'react-toastify';
 import VerifiedIcon from '../Icons/VerifiedIcon';
 import clsx from 'clsx';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function CommentSection({
   comments,
   onCommentSubmit,
   onCommentDelete,
-  currentUser,
 }) {
+  const { isLoggedIn, nickname: myNickname, userId: myId } = useAuth();
+
   const [commentInput, setCommentInput] = useState({
     nickname: '',
     password: '',
@@ -19,15 +21,13 @@ export default function CommentSection({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedCommentId, setSelectedCommentId] = useState(null);
   const [isDeletingMyComment, setIsDeletingMyComment] = useState(false);
-  //로그인 여부 확인 (!!를 이용하여 true of false인지만 비교)
-  const isLoggedIn = !!currentUser?.id;
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const submitData = {
       content: commentInput.content,
-      nickname: isLoggedIn ? currentUser.nickname : commentInput.nickname,
+      nickname: isLoggedIn ? myNickname : commentInput.nickname,
       password: isLoggedIn ? '' : commentInput.password,
     };
 
@@ -37,19 +37,13 @@ export default function CommentSection({
   };
 
   const handleDeleteClick = (commentId, authorId) => {
-    // 1. 내 ID 찾기 (userId와 id 둘 다 대응하도록 안전하게 처리)
-    const myId = currentUser?.userId || currentUser?.id;
-
     // 2. 비교 로직 (String으로 변환하여 타입 불일치 방지)
     // authorId가 존재하고, 내 ID와 일치할 때만 true
     const isMyComment =
-      isLoggedIn &&
-      authorId !== null &&
-      authorId !== undefined &&
-      String(myId) === String(authorId);
+      isLoggedIn && authorId && String(myId) === String(authorId);
 
     // 3. 익명 여부 판별 (authorId가 아예 없는 경우)
-    const isAnonymous = authorId === null || authorId === undefined;
+    const isAnonymous = !authorId;
 
     if (isMyComment || isAnonymous) {
       setSelectedCommentId(commentId);
@@ -78,7 +72,6 @@ export default function CommentSection({
       <div className={styles.commentList}>
         {comments && comments.length > 0 ? (
           comments?.map((comment) => {
-            const myId = currentUser?.userId || currentUser?.id;
             const isMyComment =
               isLoggedIn &&
               comment.authorId &&
@@ -152,7 +145,11 @@ export default function CommentSection({
 
         <div className={styles.commentFormBottom}>
           <textarea
-            placeholder="내용을 입력하세요"
+            placeholder={
+              isLoggedIn
+                ? `${myNickname}님, 댓글을 남겨보세요!`
+                : '내용을 입력하세요'
+            }
             value={commentInput.content}
             onChange={(e) =>
               setCommentInput({ ...commentInput, content: e.target.value })
