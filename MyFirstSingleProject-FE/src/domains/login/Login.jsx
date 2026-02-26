@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 function Login() {
   const navigate = useNavigate();
   const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
   const handleChange = (e) => {
@@ -16,17 +17,27 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (isLoading) return;
+    setIsLoading(true);
+
     try {
       const data = await loginRequest(loginData);
       login(data.token, data.user.nickname, data.user.id);
       localStorage.setItem('userId', data.user.id);
 
-      toast.success(`${data.user.nickname}님 환영합니다!`);
+      toast.success(`${data.user.nickname}님 환영합니다!`, {
+        toastId: 'login-success',
+      });
       // SPA 방식의 페이지 이동
       navigate('/');
     } catch (error) {
       const serverMessage = error.response?.data?.message;
-      toast.error(serverMessage || '아이디 또는 비밀번호가 틀렸습니다.');
+      toast.error(serverMessage || '아이디 또는 비밀번호가 틀렸습니다.', {
+        toastId: 'login-error',
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -56,7 +67,11 @@ function Login() {
             onChange={handleChange}
             value={loginData.password}
           />
-          <button type="submit" className={styles.loginBtn}>
+          <button
+            type="submit"
+            className={styles.loginBtn}
+            disabled={isLoading}
+          >
             로그인
           </button>
         </form>
