@@ -45,7 +45,7 @@ export default function PasswordModal({
               type="submit"
               disabled={isLoading || (isPasswordRequired && !password)}
             >
-              {isLoading ? '확인 중...' : '확인'}
+              {isLoading ? '삭제 중...' : '확인'}
             </button>
           </div>
         </form>

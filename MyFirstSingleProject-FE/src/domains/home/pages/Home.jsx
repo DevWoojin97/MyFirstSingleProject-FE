@@ -9,7 +9,7 @@ import LoginSidebar from '@/domains/login/LoginSidebar';
 import Header from '@/components/Header/Header';
 
 const DEBOUNCE_DELAY = 500; // 사용자가 입력을 멈추고 0.5초 뒤에 실행
-const LIMIT = 10; // 한 페이지에 보여줄 게시글 수
+const LIMIT = 15; // 한 페이지에 보여줄 게시글 수
 
 const Home = () => {
   const navigate = useNavigate();
@@ -19,12 +19,20 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState(''); // 입력 필드 및 검색어 상태
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true); // 처음엔 로딩 중!
+  const [isLongLoading, setIsLongLoading] = useState(false); // 📍 추가: 5초 이상 걸리는지 체크
 
   useEffect(() => {
     // 1. 디바운스 타이머 설정: API 호출 횟수를 줄여 서버 부하 방지
     const debounceTimer = setTimeout(() => {
       const fetchPosts = async () => {
         setIsLoading(true); // 로딩 시작
+        setIsLongLoading(false); // 로딩 시작 시 초기화
+
+        // 📍 추가: 5초가 지나도 로딩 중이면 isLongLoading을 true로!
+        const longLoadingTimer = setTimeout(() => {
+          setIsLongLoading(true);
+        }, 5000);
+
         try {
           const result = await getPosts({
             search: searchTerm,
@@ -43,6 +51,7 @@ const Home = () => {
           console.error('데이터 로딩 실패:', error);
         } finally {
           setIsLoading(false); // 성공이든 실패든 로딩 off
+          clearTimeout(longLoadingTimer); // 데이터 오면 타임 해제
         }
       };
 
@@ -83,7 +92,14 @@ const Home = () => {
                   <td colSpan="5" className={styles.loadingTd}>
                     <div className={styles.spinnerBox}>
                       <div className={styles.spinner}></div>
-                      <p>게시글을 불러오는 중입니다...</p>
+                      {isLongLoading ? (
+                        <p style={{ color: '#007bff', fontWeight: 'bold' }}>
+                          서버가 깨어나는 중입니다. 잠시만 기다려주세요... (최대
+                          30초 소요)
+                        </p>
+                      ) : (
+                        <p>게시글을 불러오는 중입니다...</p>
+                      )}
                     </div>
                   </td>
                 </tr>
