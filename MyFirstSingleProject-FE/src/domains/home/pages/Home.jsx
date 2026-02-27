@@ -7,6 +7,7 @@ import VerifiedIcon from '@/components/Icons/VerifiedIcon';
 import clsx from 'clsx';
 import LoginSidebar from '@/domains/login/LoginSidebar';
 import Header from '@/components/Header/Header';
+import api from '@/api/axios';
 
 const DEBOUNCE_DELAY = 500; // 사용자가 입력을 멈추고 0.5초 뒤에 실행
 const LIMIT = 15; // 한 페이지에 보여줄 게시글 수
@@ -20,6 +21,24 @@ const Home = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true); // 처음엔 로딩 중!
   const [isLongLoading, setIsLongLoading] = useState(false); // 📍 추가: 5초 이상 걸리는지 체크
+
+  // Home.jsx
+
+  useEffect(() => {
+    // 컴포넌트가 마운트될 때 (사용자가 사이트 들어오자마자) 딱 한 번 실행
+    const wakeUpServer = async () => {
+      try {
+        // /api/ping 엔드포인트가 있다고 가정
+        await api.get('/posts/ping');
+        console.log('✅ 서버 기상 완료!');
+      } catch (error) {
+        // 핑은 실패해도 괜찮습니다. 깨우는 게 목적이니까요.
+        console.log('💤 서버가 아직 자고 있거나 깨어나는 중입니다.', error);
+      }
+    };
+
+    wakeUpServer();
+  }, []); // 빈 배열: 처음에 딱 한 번만!
 
   useEffect(() => {
     // 1. 디바운스 타이머 설정: API 호출 횟수를 줄여 서버 부하 방지
