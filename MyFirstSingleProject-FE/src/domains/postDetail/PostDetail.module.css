@@ -118,6 +118,9 @@
   font-size: 14px;
   color: #666;
 }
+.googleBadge img {
+  display: block; /* 이미지 아래 미세한 공백 제거 */
+}
 
 /* --- 모바일 대응 (반응형) --- */
 @media (max-width: 768px) {

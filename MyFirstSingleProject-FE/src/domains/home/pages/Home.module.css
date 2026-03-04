@@ -165,6 +165,12 @@
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
+.googleBadgeSmall {
+  display: flex;
+  align-items: center;
+  /* 미세하게 위아래 위치가 안 맞으면 아래 값 조절 */
+  transform: translateY(0.5px);
+}
 
 @keyframes spin {
   0% {

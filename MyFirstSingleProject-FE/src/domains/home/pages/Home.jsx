@@ -8,6 +8,7 @@ import clsx from 'clsx';
 import LoginSidebar from '@/domains/login/LoginSidebar';
 import Header from '@/components/Header/Header';
 import api from '@/api/axios';
+import { FcGoogle } from 'react-icons/fc';
 
 const DEBOUNCE_DELAY = 500; // 사용자가 입력을 멈추고 0.5초 뒤에 실행
 const LIMIT = 15; // 한 페이지에 보여줄 게시글 수
@@ -155,9 +156,23 @@ const Home = () => {
                       >
                         {post.nickname}
                         {post.authorId && (
-                          <span className={styles.fixedBadge}>
-                            <VerifiedIcon />
-                          </span>
+                          <>
+                            {post.author?.provider === 'GOOGLE' ? (
+                              <span
+                                className={styles.googleBadgeSmall}
+                                title="구글 회원"
+                              >
+                                <FcGoogle size={13} />
+                              </span>
+                            ) : (
+                              <span
+                                className={styles.fixedBadge}
+                                title="인증 회원"
+                              >
+                                <VerifiedIcon />
+                              </span>
+                            )}
+                          </>
                         )}
                       </div>
                     </td>

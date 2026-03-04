@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import styles from './PostDetail.module.css';
 import CommentSection from '@/components/Comment/CommentSection';
 import VerifiedIcon from '@/components/Icons/VerifiedIcon';
+import { FcGoogle } from 'react-icons/fc';
 import clsx from 'clsx';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -168,12 +169,23 @@ export default function PostDetail() {
               className={clsx(styles.nickname, post.authorId && styles.isFixed)}
             >
               {post.nickname}
-
-              {/* 🌟 상세 페이지에도 고정닉 마크 추가 */}
               {post.authorId && (
-                <span className={styles.fixedBadge} title="인증 회원">
-                  <VerifiedIcon />
-                </span>
+                <>
+                  {post.author?.provider === 'GOOGLE' ? (
+                    /* 1. 구글 회원인 경우: 구글 로고만! */
+                    <span
+                      className={styles.googleBadge}
+                      title="구글 로그인 회원"
+                    >
+                      <FcGoogle size={13} />
+                    </span>
+                  ) : (
+                    /* 2. 구글이 아닌 일반 회원인 경우: 체크 마크만! */
+                    <span className={styles.fixedBadge} title="인증 회원">
+                      <VerifiedIcon />
+                    </span>
+                  )}
+                </>
               )}
             </span>
             <span className={styles.date}>
