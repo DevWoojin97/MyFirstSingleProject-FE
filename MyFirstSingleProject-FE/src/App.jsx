@@ -8,6 +8,7 @@ import Signup from './domains/auth/Signup';
 import Mypage from './domains/mypage/Mypage';
 import Login from './domains/login/Login';
 import { AuthProvider } from './contexts/AuthContext';
+import LoginSuccess from './domains/auth/LoginSuccess';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<Login />} />
+        <Route path="/login-success" element={<LoginSuccess />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/post/new" element={<CreatePost />} />
         <Route path="/post/:id" element={<PostDetail />} />

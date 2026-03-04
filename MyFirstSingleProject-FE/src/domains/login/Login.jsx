@@ -74,6 +74,15 @@ function Login() {
           >
             로그인
           </button>
+          <button
+            type="button"
+            className={styles.googleLoginBtn} // CSS 추가 필요
+            onClick={() =>
+              (window.location.href = 'http://localhost:5050/api/auth/google')
+            }
+          >
+            구글로 시작하기
+          </button>
         </form>
         <div className={styles.footer}>
           <span onClick={() => navigate('/signup')}>회원가입</span>

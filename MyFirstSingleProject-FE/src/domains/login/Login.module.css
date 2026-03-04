@@ -88,6 +88,26 @@
   text-decoration: underline;
   color: #333;
 }
+.googleLoginBtn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  background-color: #ffffff;
+  color: #757575;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: background-color 0.2s;
+}
+
+.googleLoginBtn:hover {
+  background-color: #f7f7f7;
+}
 
 /* 모바일 대응 */
 @media (max-width: 480px) {
