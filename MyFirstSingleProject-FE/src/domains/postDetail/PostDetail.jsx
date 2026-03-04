@@ -155,7 +155,14 @@ export default function PostDetail() {
     }
   };
 
-  if (loading) return <div className={styles.loading}>로딩 중...</div>;
+  if (loading)
+    return (
+      <div className={styles.loadingModern}>
+        <div className={styles.dot}></div>
+        <div className={styles.dot}></div>
+        <div className={styles.dot}></div>
+      </div>
+    );
   if (!post)
     return <div className={styles.error}>존재하지 않는 게시글입니다.</div>;
 
