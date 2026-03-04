@@ -119,7 +119,10 @@
   color: #666;
 }
 .googleBadge img {
-  display: block; /* 이미지 아래 미세한 공백 제거 */
+  display: flex;
+  align-items: center;
+  /* 미세하게 위아래 위치가 안 맞으면 아래 값 조절 */
+  transform: translateY(0.5px);
 }
 
 /* --- 모바일 대응 (반응형) --- */

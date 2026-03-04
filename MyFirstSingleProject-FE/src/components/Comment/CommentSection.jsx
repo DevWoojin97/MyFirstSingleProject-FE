@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import VerifiedIcon from '../Icons/VerifiedIcon';
 import clsx from 'clsx';
 import { useAuth } from '@/contexts/AuthContext';
+import { FcGoogle } from 'react-icons/fc';
 
 export default function CommentSection({
   comments,
@@ -88,9 +89,13 @@ export default function CommentSection({
                     >
                       {comment.nickname}
                       {comment.authorId && (
-                        <span className={styles.fixedBadge} title="인증된 회원">
-                          <VerifiedIcon />
-                        </span>
+                        <div className={styles.fixedBadge}>
+                          {comment.author?.provider === 'GOOGLE' ? (
+                            <FcGoogle />
+                          ) : (
+                            <VerifiedIcon />
+                          )}
+                        </div>
                       )}
                     </span>
                     <span className={styles.commentDate}>

@@ -162,7 +162,7 @@ const Home = () => {
                                 className={styles.googleBadgeSmall}
                                 title="구글 회원"
                               >
-                                <FcGoogle size={13} />
+                                <FcGoogle size={12} />
                               </span>
                             ) : (
                               <span
