@@ -26,7 +26,7 @@ const LoginSidebar = () => {
               <span className={styles.nickname}>
                 <strong>{nickname}</strong>님
               </span>
-              <span className={styles.welcomeMsg}>하이요~ㅎㅎ</span>
+              <span className={styles.welcomeMsg}>반갑습니다.</span>
             </div>
           </div>
 

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { signupRequest } from '@/api/authApi';
 import { useNavigate } from 'react-router-dom';
+import { FcGoogle } from 'react-icons/fc';
 
 function Signup() {
   const navigate = useNavigate();
@@ -53,6 +54,8 @@ function Signup() {
     if (nickname.length < 2 || nickname.length > 8) {
       return toast.error('닉네임은 2~8자 사이여야 합니다.');
     }
+
+    setIsLoading(true);
     try {
       // authApi 함수 호출
       const data = await signupRequest(formData);
@@ -108,6 +111,20 @@ function Signup() {
         />
         <button type="submit" className={styles.signupBtn} disabled={isLoading}>
           {isLoading ? '가입 중...' : '회원가입'}
+        </button>
+
+        {/* 구글 로그인 버튼 */}
+        <button
+          type="button"
+          className={styles.googleLoginBtn}
+          onClick={() =>
+            (window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`)
+          }
+        >
+          <div className={styles.googleIconWrapper}>
+            <FcGoogle size={20} />
+          </div>
+          <span className={styles.googleText}>구글로 간편 가입하기</span>
         </button>
       </form>
     </div>
