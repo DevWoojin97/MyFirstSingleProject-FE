@@ -104,6 +104,35 @@
   gap: 10px;
   transition: background-color 0.2s;
 }
+.googleLoginBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 중앙 정렬 */
+  gap: 10px; /* 로고와 글자 사이 간격 */
+  width: 100%;
+  height: 45px;
+  background-color: #ffffff; /* 구글 버튼은 보통 흰색 */
+  color: #333333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.googleLoginBtn:hover {
+  background-color: #f7f7f7;
+}
+
+.googleIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.googleText {
+  flex-grow: 0; /* 텍스트가 중앙에 오도록 조절 */
+}
 
 .googleLoginBtn:hover {
   background-color: #f7f7f7;

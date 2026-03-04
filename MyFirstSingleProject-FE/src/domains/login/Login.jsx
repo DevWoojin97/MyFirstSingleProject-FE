@@ -4,6 +4,7 @@ import styles from './Login.module.css';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { FcGoogle } from 'react-icons/fc';
 
 function Login() {
   const navigate = useNavigate();
@@ -81,7 +82,10 @@ function Login() {
               (window.location.href = 'http://localhost:5050/api/auth/google')
             }
           >
-            구글로 시작하기
+            <div className={styles.googleIconWrapper}>
+              <FcGoogle size={20} />
+            </div>
+            <span className={styles.googleText}>구글로 시작하기</span>
           </button>
         </form>
         <div className={styles.footer}>
