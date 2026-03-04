@@ -79,7 +79,7 @@ function Login() {
             type="button"
             className={styles.googleLoginBtn} // CSS 추가 필요
             onClick={() =>
-              (window.location.href = 'http://localhost:5050/api/auth/google')
+              (window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`)
             }
           >
             <div className={styles.googleIconWrapper}>
