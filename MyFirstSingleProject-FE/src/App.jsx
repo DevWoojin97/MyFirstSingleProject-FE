@@ -9,8 +9,10 @@ import Mypage from './domains/mypage/Mypage';
 import Login from './domains/login/Login';
 import { AuthProvider } from './contexts/AuthContext';
 import LoginSuccess from './domains/auth/LoginSuccess';
+import { useInAppBrowserHandler } from './hooks/useInAppBrowserHandler';
 
 export default function App() {
+  useInAppBrowserHandler();
   return (
     <AuthProvider>
       <ToastContainer
