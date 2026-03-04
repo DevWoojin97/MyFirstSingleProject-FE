@@ -162,65 +162,76 @@
 /* --- 모바일 대응 (반응형) --- */
 @media (max-width: 768px) {
   .container {
-    margin: 0; /* 모바일은 컨테이너 여백을 없애 화면을 꽉 채웁니다 */
+    margin: 0;
     padding: 0;
+    background-color: #fff;
   }
 
-  /* 1. 헤더 영역 최적화 */
   .header {
-    padding: 12px 15px;
+    padding: 15px;
+    border-top: none; /* 모바일은 상단 라인 제거가 깔끔함 */
+    border-bottom: 1px solid #eee;
   }
 
   .title {
-    font-size: 16px; /* 제목 크기 살짝 조절 */
+    font-size: 18px;
     line-height: 1.4;
-    margin-bottom: 8px;
+    word-break: keep-all; /* 단어 단위로 줄바꿈되어 더 읽기 편함 */
   }
 
-  .info {
-    flex-direction: column; /* 닉네임과 날짜/조회수를 2단으로 배치 */
-    gap: 4px;
-    font-size: 12px;
-  }
-
-  .nickname {
-    margin-right: 0;
-  }
-
-  .date {
-    font-size: 11px;
-  }
-
-  /* 2. 본문 영역 */
-  .content {
-    padding: 25px 15px; /* 본문 여백 최적화 */
-    min-height: 200px;
-    font-size: 15px; /* 모바일 가독성을 위해 폰트 살짝 키움 */
-    line-height: 1.7;
-  }
-
-  /* 3. 하단 버튼 영역 */
+  /* 3. 하단 버튼 영역 (여기가 핵심!) */
   .footer {
     padding: 15px;
-    flex-direction: column; /* 목록 버튼과 수정/삭제 버튼을 위아래로 */
-    gap: 12px;
-  }
-
-  .footer div {
     display: flex;
-    width: 100%;
-    gap: 5px;
+    flex-direction: row; /* 위아래가 아닌 양옆으로 배치 */
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fdfdfd;
+    border-top: 1px solid #eee;
+    gap: 10px;
   }
 
-  /* 버튼이 모바일에서 누르기 편하게 너비를 키움 */
-  .footer button {
+  /* 왼쪽 (목록 버튼) */
+  .footer .btnLeft {
+    flex: 0 0 auto;
+  }
+
+  /* 오른쪽 (수정, 삭제 버튼 그룹) */
+  .footer .btnRight {
     flex: 1;
-    padding: 10px 0;
-    font-size: 14px;
-    margin-left: 0; /* 기존 마진 제거 */
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
   }
 
-  .btnGray {
-    order: 2; /* 목록 버튼이 아래로 가게 하고 싶다면 사용 */
+  .footer button {
+    margin: 0;
+    padding: 8px 14px; /* 너무 뚱뚱하지 않게 조절 */
+    font-size: 13px;
+    border-radius: 4px; /* 조금 더 둥글게 */
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 목록 버튼은 조금 작고 슬림하게 */
+  .footer .btnGray {
+    min-width: 60px;
+    background-color: #f8f9fa;
+    border-color: #ddd;
+  }
+
+  /* 수정 버튼 포인트 */
+  .footer .btnBlue {
+    flex: 1; /* 수정 버튼이 공간을 더 차지하게 함 */
+    max-width: 100px;
+  }
+
+  /* 삭제 버튼 */
+  .footer .btnRight .btnGray {
+    flex: 1;
+    max-width: 80px;
+    color: #888; /* 삭제는 조금 옅게 처리하여 세련미 부여 */
   }
 }
