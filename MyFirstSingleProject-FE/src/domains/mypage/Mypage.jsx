@@ -34,6 +34,8 @@ export default function Mypage() {
     return (
       <div className={styles.loadingModern}>
         <div className={styles.dot}></div>
+        <div className={styles.dot}></div>
+        <div className={styles.dot}></div>
       </div>
     );
   if (!activity)
