@@ -216,7 +216,16 @@
   display: block;
   font-size: 0.8rem;
   color: #888;
-  margin-top: 4px;
+  /* 💡 간격을 4px에서 8px로 늘렸습니다. */
+  margin-top: 8px;
+  opacity: 0.8;
+  padding-left: 4px;
+  /* 💡 ㄴ 기호를 붙여주면 '답글' 느낌이 나서 더 명확해집니다. */
+}
+.targetPostTitle::before {
+  content: 'ㄴ ';
+  margin-right: 4px;
+  color: #ccc;
 }
 
 /* 기존 postTitle 수정 (댓글은 내용이 길 수 있으니) */
@@ -225,6 +234,9 @@
   color: #333;
   cursor: pointer;
   line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .commentCount {
   color: #ff5a5f;

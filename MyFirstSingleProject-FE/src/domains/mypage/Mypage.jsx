@@ -2,24 +2,34 @@ import { getMyActivity, getMyComments, getMyPosts } from '@/api/userApi';
 import { useEffect, useState } from 'react';
 import styles from './Mypage.module.css';
 import { Link } from 'react-router-dom';
+import Pagination from '@/components/Pagination/Pagination';
 
 export default function Mypage() {
   const [activity, setActivity] = useState(null);
   const [posts, setPosts] = useState([]); // 게시글 상태
+  const [postPage, setPostPage] = useState(1);
+  const [totalPostPages, setTotalPostPages] = useState(1);
+
   const [comments, setComments] = useState([]); // 댓글 상태
   const [activeTab, setActiveTab] = useState('posts'); // 현재 탭 상태. 기본값 게시글(작성글)
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchMyData = async () => {
       try {
         // 병렬로 두 API를 동시에 호출합니다.
-        const [activityData, postsData, commentsData] = await Promise.all([
+        const [activityData, postsResponse, commentsData] = await Promise.all([
           getMyActivity(),
-          getMyPosts(),
+          getMyPosts(postPage),
           getMyComments(),
         ]);
         setActivity(activityData);
-        setPosts(postsData);
+
+        if (postsResponse) {
+          setPosts(postsResponse.posts || []);
+          setTotalPostPages(postsResponse.totalPages || 1);
+        }
+
         setComments(commentsData);
       } catch (error) {
         console.error('데이터 로드 실패', error);
@@ -28,7 +38,7 @@ export default function Mypage() {
       }
     };
     fetchMyData();
-  }, []);
+  }, [postPage]);
 
   if (loading)
     return (
@@ -103,54 +113,63 @@ export default function Mypage() {
 
       {/* 리스트 영역: activeTab에 따라 다른 목록을 보여줌 */}
       <div className={styles.contentList}>
-        {activeTab === 'posts' &&
-          (posts.length > 0 ? (
-            <ul className={styles.postList}>
-              {posts.map((post) => (
-                <li key={post.id} className={styles.postItem}>
-                  <div className={styles.postInfo}>
-                    {/* 1. 게시글 번호 추가 */}
-                    <span className={styles.postId}>{post.id}</span>
-
-                    <div className={styles.titleSection}>
-                      <span
-                        className={
-                          post.hasImage ? styles.cameraIcon : styles.talkIcon
-                        }
-                      >
-                        {post.hasImage ? '📷 ' : '💬 '}
-                      </span>
-                      <span className={styles.postTitle}>{post.title}</span>
-                      {/* 3. 댓글 개수 (Prisma _count 구조 반영) */}
-                      {post._count?.comments > 0 && (
-                        <span className={styles.commentCount}>
-                          [{post._count.comments}]
+        {activeTab === 'posts' && (
+          <>
+            {/* 1. 리스트 부분 */}
+            {posts.length > 0 ? (
+              <ul className={styles.postList}>
+                {posts.map((post) => (
+                  <li key={post.id} className={styles.postItem}>
+                    <div className={styles.postInfo}>
+                      <span className={styles.postId}>{post.id}</span>
+                      <div className={styles.titleSection}>
+                        <span
+                          className={
+                            post.hasImage ? styles.cameraIcon : styles.talkIcon
+                          }
+                        >
+                          {post.hasImage ? '📷 ' : '💬 '}
                         </span>
-                      )}
+                        <span className={styles.postTitle}>{post.title}</span>
+                        {post._count?.comments > 0 && (
+                          <span className={styles.commentCount}>
+                            [{post._count.comments}]
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className={styles.postMeta}>
-                    <span className={styles.date}>{post.createdAt}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className={styles.emptyMsg}>작성한 게시글이 없습니다.</p>
-          ))}
+                    <div className={styles.postMeta}>
+                      <span className={styles.date}>{post.createdAt}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={styles.emptyMsg}>작성한 게시글이 없습니다.</p>
+            )}
 
+            <Pagination
+              currentPage={postPage}
+              totalPages={totalPostPages}
+              onPageChange={setPostPage}
+            />
+          </>
+        )}
         {activeTab === 'comments' &&
           (comments.length > 0 ? (
             <ul className={styles.postList}>
               {comments.map((comment) => (
                 <li key={comment.id} className={styles.postItem}>
                   <div className={styles.postInfo}>
-                    {/* 댓글 내용 */}
-                    <span className={styles.postTitle}>{comment.content}</span>
-                    {/* 어떤 글에 쓴 댓글인지 작게 표시 (CSS 추가 필요) */}
-                    <span className={styles.targetPostTitle}>
-                      제목: {comment.postTitle}
-                    </span>
+                    <div className={styles.commentContentWrapper}>
+                      <span className={styles.postTitle}>
+                        {comment.content}
+                      </span>
+
+                      <span className={styles.targetPostTitle}>
+                        제목: {comment.postTitle}
+                      </span>
+                    </div>
                   </div>
                   <div className={styles.postMeta}>
                     <span className={styles.date}>{comment.createdAt}</span>

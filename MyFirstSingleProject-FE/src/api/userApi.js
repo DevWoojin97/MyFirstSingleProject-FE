@@ -7,8 +7,8 @@ export const getMyActivity = async () => {
 };
 
 //작성글 목록
-export const getMyPosts = async () => {
-  const response = await api.get('/user/my-posts');
+export const getMyPosts = async (page = 1) => {
+  const response = await api.get(`/user/my-posts?page=${page}`);
   return response.data.data;
 };
 
