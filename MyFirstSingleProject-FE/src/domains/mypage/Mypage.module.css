@@ -226,6 +226,12 @@
   cursor: pointer;
   line-height: 1.4;
 }
+.commentCount {
+  color: #ff5a5f;
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-left: 5px;
+}
 
 @keyframes pulse {
   0% {
@@ -241,6 +247,65 @@
     opacity: 0.5;
   }
 }
+
+.postInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* 번호와 제목 사이 간격 */
+}
+
+.postId {
+  font-size: 0.85rem;
+  color: #999;
+  min-width: 30px; /* 번호 자리를 고정해서 제목 시작 위치를 맞춤 */
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 카메라와 말풍선 아이콘 공통/개별 스타일 */
+.cameraIcon,
+.talkIcon {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0; /* 아이콘이 찌그러지지 않게 방지 */
+}
+
+.cameraIcon {
+  color: #2c7ed9; /* 카메라 아이콘 강조색 (필요 시) */
+}
+
+.talkIcon {
+  color: #999; /* 말풍선 아이콘은 조금 더 차분하게 */
+}
+
+.postTitle {
+  font-size: 1rem;
+  color: #333;
+  /* 제목이 너무 길면 말줄임표 처리하고 싶을 때 유용 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.commentCount {
+  font-size: 0.85rem;
+  color: #ff4d4f;
+  font-weight: bold;
+}
+
+/* 모바일 대응: 번호가 너무 자리를 차지하지 않게 */
+@media (max-width: 600px) {
+  .postId {
+    min-width: 20px;
+    font-size: 0.75rem;
+  }
+}
+
 /* --- 반응형 스타일 추가 --- */
 
 @media (max-width: 600px) {

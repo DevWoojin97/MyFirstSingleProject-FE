@@ -109,7 +109,25 @@ export default function Mypage() {
               {posts.map((post) => (
                 <li key={post.id} className={styles.postItem}>
                   <div className={styles.postInfo}>
-                    <span className={styles.postTitle}>{post.title}</span>
+                    {/* 1. 게시글 번호 추가 */}
+                    <span className={styles.postId}>{post.id}</span>
+
+                    <div className={styles.titleSection}>
+                      <span
+                        className={
+                          post.hasImage ? styles.cameraIcon : styles.talkIcon
+                        }
+                      >
+                        {post.hasImage ? '📷 ' : '💬 '}
+                      </span>
+                      <span className={styles.postTitle}>{post.title}</span>
+                      {/* 3. 댓글 개수 (Prisma _count 구조 반영) */}
+                      {post._count?.comments > 0 && (
+                        <span className={styles.commentCount}>
+                          [{post._count.comments}]
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className={styles.postMeta}>
                     <span className={styles.date}>{post.createdAt}</span>
@@ -131,7 +149,7 @@ export default function Mypage() {
                     <span className={styles.postTitle}>{comment.content}</span>
                     {/* 어떤 글에 쓴 댓글인지 작게 표시 (CSS 추가 필요) */}
                     <span className={styles.targetPostTitle}>
-                      원문: {comment.postTitle}
+                      제목: {comment.postTitle}
                     </span>
                   </div>
                   <div className={styles.postMeta}>
