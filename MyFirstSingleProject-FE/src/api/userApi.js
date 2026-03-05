@@ -13,7 +13,7 @@ export const getMyPosts = async (page = 1) => {
 };
 
 //댓글 목록
-export const getMyComments = async () => {
-  const response = await api.get('/user/my-comments');
+export const getMyComments = async (page = 1) => {
+  const response = await api.get(`/user/my-comments?page=${page}`);
   return response.data.data;
 };

@@ -11,26 +11,33 @@ export default function Mypage() {
   const [totalPostPages, setTotalPostPages] = useState(1);
 
   const [comments, setComments] = useState([]); // 댓글 상태
+  const [commentPage, setCommentPage] = useState(1);
+  const [totalCommentPages, setTotalCommentPages] = useState(1);
+
   const [activeTab, setActiveTab] = useState('posts'); // 현재 탭 상태. 기본값 게시글(작성글)
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchMyData = async () => {
       try {
+        setLoading(true);
         // 병렬로 두 API를 동시에 호출합니다.
-        const [activityData, postsResponse, commentsData] = await Promise.all([
+        const [activityData, postsData, commentsData] = await Promise.all([
           getMyActivity(),
           getMyPosts(postPage),
-          getMyComments(),
+          getMyComments(commentPage),
         ]);
         setActivity(activityData);
 
-        if (postsResponse) {
-          setPosts(postsResponse.posts || []);
-          setTotalPostPages(postsResponse.totalPages || 1);
+        if (postsData) {
+          setPosts(postsData.posts || []);
+          setTotalPostPages(postsData.totalPages || 1);
         }
 
-        setComments(commentsData);
+        if (commentsData) {
+          setComments(commentsData.comments || []);
+          setTotalCommentPages(commentsData.totalPages || 1);
+        }
       } catch (error) {
         console.error('데이터 로드 실패', error);
       } finally {
@@ -38,7 +45,7 @@ export default function Mypage() {
       }
     };
     fetchMyData();
-  }, [postPage]);
+  }, [postPage, commentPage]);
 
   if (loading)
     return (
@@ -120,27 +127,31 @@ export default function Mypage() {
               <ul className={styles.postList}>
                 {posts.map((post) => (
                   <li key={post.id} className={styles.postItem}>
-                    <div className={styles.postInfo}>
-                      <span className={styles.postId}>{post.id}</span>
-                      <div className={styles.titleSection}>
-                        <span
-                          className={
-                            post.hasImage ? styles.cameraIcon : styles.talkIcon
-                          }
-                        >
-                          {post.hasImage ? '📷 ' : '💬 '}
-                        </span>
-                        <span className={styles.postTitle}>{post.title}</span>
-                        {post._count?.comments > 0 && (
-                          <span className={styles.commentCount}>
-                            [{post._count.comments}]
+                    <Link to={`/post/${post.id}`} className={styles.postLink}>
+                      <div className={styles.postInfo}>
+                        <span className={styles.postId}>{post.id}</span>
+                        <div className={styles.titleSection}>
+                          <span
+                            className={
+                              post.hasImage
+                                ? styles.cameraIcon
+                                : styles.talkIcon
+                            }
+                          >
+                            {post.hasImage ? '📷 ' : '💬 '}
                           </span>
-                        )}
+                          <span className={styles.postTitle}>{post.title}</span>
+                          {post._count?.comments > 0 && (
+                            <span className={styles.commentCount}>
+                              [{post._count.comments}]
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <div className={styles.postMeta}>
-                      <span className={styles.date}>{post.createdAt}</span>
-                    </div>
+                      <div className={styles.postMeta}>
+                        <span className={styles.date}>{post.createdAt}</span>
+                      </div>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -155,31 +166,47 @@ export default function Mypage() {
             />
           </>
         )}
-        {activeTab === 'comments' &&
-          (comments.length > 0 ? (
-            <ul className={styles.postList}>
-              {comments.map((comment) => (
-                <li key={comment.id} className={styles.postItem}>
-                  <div className={styles.postInfo}>
-                    <div className={styles.commentContentWrapper}>
-                      <span className={styles.postTitle}>
-                        {comment.content}
-                      </span>
+        {activeTab === 'comments' && (
+          <>
+            {/* 1. 조건문은 반드시 중괄호 { } 안에 넣어야 합니다 */}
+            {comments.length > 0 ? (
+              <ul className={styles.postList}>
+                {comments.map((comment) => (
+                  <li key={comment.id} className={styles.postItem}>
+                    <Link
+                      to={comment.postId ? `/post/${comment.postId}` : '#'}
+                      className={styles.postLink}
+                      onClick={(e) => !comment.postId && e.preventDefault()} // 삭제된 글이면 클릭 방지
+                    >
+                      <div className={styles.postInfo}>
+                        <div className={styles.commentContentWrapper}>
+                          <span className={styles.postTitle}>
+                            {comment.content}
+                          </span>
+                          <span className={styles.targetPostTitle}>
+                            제목: {comment.postTitle}
+                          </span>
+                        </div>
+                      </div>
+                      <div className={styles.postMeta}>
+                        <span className={styles.date}>{comment.createdAt}</span>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={styles.emptyMsg}>작성한 댓글이 없습니다.</p>
+            )}
 
-                      <span className={styles.targetPostTitle}>
-                        제목: {comment.postTitle}
-                      </span>
-                    </div>
-                  </div>
-                  <div className={styles.postMeta}>
-                    <span className={styles.date}>{comment.createdAt}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className={styles.emptyMsg}>작성한 댓글이 없습니다.</p>
-          ))}
+            {/* 2. 댓글 전용 상태(commentPage, setCommentPage)로 변경 */}
+            <Pagination
+              currentPage={commentPage}
+              totalPages={totalCommentPages}
+              onPageChange={setCommentPage}
+            />
+          </>
+        )}
 
         {activeTab === 'settings' && (
           <div className={styles.settingsArea}>
