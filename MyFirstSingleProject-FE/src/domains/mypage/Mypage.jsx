@@ -174,7 +174,11 @@ export default function Mypage() {
                 {comments.map((comment) => (
                   <li key={comment.id} className={styles.postItem}>
                     <Link
-                      to={comment.postId ? `/post/${comment.postId}` : '#'}
+                      to={
+                        comment.postId
+                          ? `/post/${comment.postId}#comment-${comment.id}`
+                          : '#'
+                      }
                       className={styles.postLink}
                       onClick={(e) => !comment.postId && e.preventDefault()} // 삭제된 글이면 클릭 방지
                     >

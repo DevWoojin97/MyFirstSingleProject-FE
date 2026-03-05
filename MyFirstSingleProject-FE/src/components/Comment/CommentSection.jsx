@@ -78,7 +78,11 @@ export default function CommentSection({
               String(myId) === String(comment.authorId);
             const isAnonymous = !comment.authorId;
             return (
-              <div key={comment.id} className={styles.commentItem}>
+              <div
+                key={comment.id}
+                id={`comment-${comment.id}`}
+                className={styles.commentItem}
+              >
                 <div className={styles.commentMeta}>
                   <div className={styles.metaLeft}>
                     <span

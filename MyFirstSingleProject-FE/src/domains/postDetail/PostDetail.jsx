@@ -8,7 +8,7 @@ import {
 } from '@/api/postApi';
 import PasswordModal from '@/components/PasswordModal/PasswordModal';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styles from './PostDetail.module.css';
 import CommentSection from '@/components/Comment/CommentSection';
@@ -21,6 +21,7 @@ export default function PostDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { userId, nickname, isLoggedIn } = useAuth();
+  const { hash } = useLocation();
 
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -48,6 +49,33 @@ export default function PostDetail() {
   useEffect(() => {
     fetchPost();
   }, [fetchPost]);
+
+  // 🌟 추가된 스크롤 로직: 해시(#)가 있을 때 해당 댓글로 이동
+  useEffect(() => {
+    // 1. URL에 해시(#comment-xxx)가 있고, 게시글 데이터(post)가 로딩 완료된 경우 실행
+    if (hash && !loading && post) {
+      const elementId = hash.replace('#', ''); // '#comment-12' -> 'comment-12'
+
+      // 2. DOM에 댓글 요소가 렌더링될 때까지 아주 잠깐 대기 (setTimeout)
+      const timer = setTimeout(() => {
+        const element = document.getElementById(elementId);
+        if (element) {
+          // 3. 해당 위치로 부드럽게 스크롤 이동
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+          // 4. (선택사항) 강조 효과를 위한 클래스 추가
+          element.classList.add(styles.highlight);
+
+          // 5초 뒤 강조 효과 제거
+          setTimeout(() => {
+            element.classList.remove(styles.highlight);
+          }, 2000);
+        }
+      }, 300); // 렌더링 속도에 따라 300~500ms가 적당합니다.
+
+      return () => clearTimeout(timer);
+    }
+  }, [hash, loading, post]); // 해시나 로딩 상태가 변할 때 감시
 
   // 핸들러들
   const handleGoToList = () => navigate('/');

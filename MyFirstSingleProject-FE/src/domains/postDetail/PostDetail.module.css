@@ -159,6 +159,20 @@
   }
 }
 
+.highlight {
+  animation: flash 2s ease-out;
+  border-radius: 4px;
+}
+
+@keyframes flash {
+  0% {
+    background-color: #fff9c4;
+  } /* 연한 노란색으로 반짝 */
+  100% {
+    background-color: transparent;
+  }
+}
+
 /* --- 모바일 대응 (반응형) --- */
 @media (max-width: 768px) {
   .container {
