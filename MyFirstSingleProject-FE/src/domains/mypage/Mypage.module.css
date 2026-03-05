@@ -192,6 +192,21 @@
   color: #2c7ed9;
   border-color: #2c7ed9;
 }
+/* 댓글 리스트에서 원문 제목 표시 스타일 */
+.targetPostTitle {
+  display: block;
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 4px;
+}
+
+/* 기존 postTitle 수정 (댓글은 내용이 길 수 있으니) */
+.postTitle {
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  line-height: 1.4;
+}
 
 @keyframes pulse {
   0% {
@@ -205,5 +220,61 @@
   100% {
     transform: scale(0.8);
     opacity: 0.5;
+  }
+}
+/* --- 반응형 스타일 추가 --- */
+
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column; /* 가로에서 세로 배치로 변경 */
+    align-items: flex-start;
+    gap: 20px;
+    padding: 15px;
+  }
+
+  .stats {
+    width: 100%;
+    justify-content: space-around; /* 스탯 항목들을 넓게 분산 */
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
+  }
+
+  .statLine {
+    display: none; /* 모바일에서는 구분선 제거 */
+  }
+
+  .avatar {
+    width: 60px; /* 이미지 크기 조절 */
+    height: 60px;
+  }
+
+  .nickname {
+    font-size: 1.1rem;
+  }
+
+  /* 리스트 영역 수정 */
+  .postItem {
+    flex-direction: column; /* 제목과 메타정보를 세로로 */
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 15px;
+  }
+
+  .postMeta {
+    width: 100%;
+    justify-content: flex-end; /* 날짜 등은 우측 정렬 */
+    font-size: 0.75rem;
+  }
+
+  .postTitle {
+    width: 100%;
+    word-break: break-all; /* 긴 제목이 박스를 뚫고 나가지 않게 함 */
+    line-height: 1.4;
+  }
+
+  .tabs button {
+    flex: 1; /* 탭 버튼이 가로로 꽉 차게 */
+    padding: 10px 5px;
+    font-size: 0.85rem;
   }
 }

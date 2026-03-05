@@ -1,22 +1,26 @@
-import { getMyActivity, getMyPosts } from '@/api/userApi';
+import { getMyActivity, getMyComments, getMyPosts } from '@/api/userApi';
 import { useEffect, useState } from 'react';
 import styles from './Mypage.module.css';
 import { Link } from 'react-router-dom';
 
 export default function Mypage() {
   const [activity, setActivity] = useState(null);
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]); // 게시글 상태
+  const [comments, setComments] = useState([]); // 댓글 상태
+  const [activeTab, setActiveTab] = useState('posts'); // 현재 탭 상태. 기본값 게시글(작성글)
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchMyData = async () => {
       try {
         // 병렬로 두 API를 동시에 호출합니다.
-        const [activityData, postsData] = await Promise.all([
+        const [activityData, postsData, commentsData] = await Promise.all([
           getMyActivity(),
           getMyPosts(),
+          getMyComments(),
         ]);
         setActivity(activityData);
         setPosts(postsData);
+        setComments(commentsData);
       } catch (error) {
         console.error('데이터 로드 실패', error);
       } finally {
@@ -75,28 +79,73 @@ export default function Mypage() {
 
       {/* 탭 네비게이션 */}
       <nav className={styles.tabs}>
-        <button className={styles.activeTab}>작성글</button>
-        <button>작성댓글</button>
-        <button>설정</button>
+        <button
+          className={activeTab === 'posts' ? styles.activeTab : ''}
+          onClick={() => setActiveTab('posts')}
+        >
+          작성글
+        </button>
+        <button
+          className={activeTab === 'comments' ? styles.activeTab : ''}
+          onClick={() => setActiveTab('comments')}
+        >
+          작성댓글
+        </button>
+        <button
+          className={activeTab === 'settings' ? styles.activeTab : ''}
+          onClick={() => setActiveTab('settings')}
+        >
+          설정
+        </button>
       </nav>
 
-      {/* 리스트 영역 (다음 단계에서 구현) */}
+      {/* 리스트 영역: activeTab에 따라 다른 목록을 보여줌 */}
       <div className={styles.contentList}>
-        {posts.length > 0 ? (
-          <ul className={styles.postList}>
-            {posts.map((post) => (
-              <li key={post.id} className={styles.postItem}>
-                <div className={styles.postInfo}>
-                  <span className={styles.postTitle}>{post.title}</span>
-                </div>
-                <div className={styles.postMeta}>
-                  <span className={styles.date}>{post.createdAt}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className={styles.emptyMsg}>작성한 게시글이 없습니다.</p>
+        {activeTab === 'posts' &&
+          (posts.length > 0 ? (
+            <ul className={styles.postList}>
+              {posts.map((post) => (
+                <li key={post.id} className={styles.postItem}>
+                  <div className={styles.postInfo}>
+                    <span className={styles.postTitle}>{post.title}</span>
+                  </div>
+                  <div className={styles.postMeta}>
+                    <span className={styles.date}>{post.createdAt}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={styles.emptyMsg}>작성한 게시글이 없습니다.</p>
+          ))}
+
+        {activeTab === 'comments' &&
+          (comments.length > 0 ? (
+            <ul className={styles.postList}>
+              {comments.map((comment) => (
+                <li key={comment.id} className={styles.postItem}>
+                  <div className={styles.postInfo}>
+                    {/* 댓글 내용 */}
+                    <span className={styles.postTitle}>{comment.content}</span>
+                    {/* 어떤 글에 쓴 댓글인지 작게 표시 (CSS 추가 필요) */}
+                    <span className={styles.targetPostTitle}>
+                      원문: {comment.postTitle}
+                    </span>
+                  </div>
+                  <div className={styles.postMeta}>
+                    <span className={styles.date}>{comment.createdAt}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={styles.emptyMsg}>작성한 댓글이 없습니다.</p>
+          ))}
+
+        {activeTab === 'settings' && (
+          <div className={styles.settingsArea}>
+            <p className={styles.emptyMsg}>설정 페이지 준비 중입니다.</p>
+          </div>
         )}
       </div>
     </div>
