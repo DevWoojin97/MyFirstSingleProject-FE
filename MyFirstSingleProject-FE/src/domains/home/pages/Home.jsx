@@ -140,7 +140,7 @@ const Home = () => {
                       >
                         {post.hasImage ? '📷 ' : '💬 '}
                       </span>
-                      {post.title}
+                      <span className={styles.actualTitle}>{post.title}</span>
                       {post.commentCount > 0 && (
                         <span className={styles.commentCount}>
                           [{post.commentCount}]
@@ -154,7 +154,10 @@ const Home = () => {
                           post.authorId && styles.isFixed,
                         )}
                       >
-                        {post.nickname}
+                        <span className={styles.nicknameText}>
+                          {post.nickname}
+                        </span>
+
                         {post.authorId && (
                           <>
                             {post.author?.provider === 'GOOGLE' ? (

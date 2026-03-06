@@ -28,6 +28,8 @@
   border-collapse: collapse;
   border-top: 2px solid #3b4890;
   font-size: 13px;
+  /* 핵심: 테이블이 콘텐츠에 따라 늘어나지 않고 부여된 너비를 지키게 합니다 */
+  table-layout: fixed;
 }
 
 .table thead th {
@@ -58,7 +60,7 @@
 }
 .writer {
   width: 120px;
-  white-space: nowrap;
+  overflow: hidden;
 }
 .date {
   width: 80px;
@@ -72,8 +74,9 @@
 .titleText {
   text-align: left !important;
   padding: 10px !important;
-  display: flex;
-  align-items: center;
+  display: flex; /* 아이콘, 제목, 댓글수를 가로로 배치 */
+  align-items: center; /* 수직 중앙 정렬 */
+  overflow: hidden; /* 내부 요소가 삐져나가는 것 방지 */
 }
 
 .cameraIcon {
@@ -91,6 +94,8 @@
   font-size: 0.85rem;
   font-weight: bold;
   margin-left: 5px;
+  flex-shrink: 0; /* 제목이 길어져도 댓글수는 찌그러지지 않고 고정 */
+  white-space: nowrap;
 }
 
 .buttonWrapper {
@@ -132,6 +137,7 @@
   align-items: center;
   gap: 4px;
   color: #666; /* 원래의 기본 회색 */
+  max-width: 100%;
 }
 
 /* 고정닉 아이콘 전용 스타일 */
@@ -171,6 +177,32 @@
   /* 미세하게 위아래 위치가 안 맞으면 아래 값 조절 */
   transform: translateY(0.5px);
 }
+.actualTitle {
+  flex: 1; /* 아이콘과 댓글수 사이의 남는 공간을 다 차지함 */
+  white-space: nowrap; /* 줄바꿈 방지 */
+  overflow: hidden; /* 넘치는 글자 숨김 */
+  text-overflow: ellipsis; /* ... 표시 */
+  min-width: 0; /* flex 환경에서 말줄임이 작동하게 하는 필수 트리거 */
+  display: block; /* span을 블록화하여 너비 계산 가능하게 함 */
+}
+.nicknameContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.nicknameText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.fixedBadge,
+.googleBadgeSmall {
+  flex-shrink: 0; /* 아이콘 절대 안줄어듦 */
+}
 
 @keyframes spin {
   0% {
@@ -208,18 +240,25 @@
   }
 
   .titleText {
-    font-size: 14px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    text-align: left !important;
+    padding: 10px !important;
+    display: flex;
+    align-items: center;
+    min-width: 0; /* flex 자식의 말줄임을 위한 필수 속성 */
+  }
+  /* --- 새로 추가: 제목 텍스트만 제어 --- */
+  .actualTitle {
+    display: inline-block;
+    min-width: 0;
+    /* PC에서는 기본적으로 다 보여줌 */
   }
 
   .writer {
     width: 80px;
     font-size: 11px;
     overflow: hidden;
-    text-overflow: ellipsis;
   }
+
   .date {
     width: 60px;
     font-size: 11px;

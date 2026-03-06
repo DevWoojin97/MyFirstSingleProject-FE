@@ -100,6 +100,7 @@ export default function UpdatePost() {
             type="text"
             name="title"
             placeholder="제목을 입력하세요"
+            maxLength={50}
             value={formData.title}
             onChange={handleChange}
             className={styles.titleInput}

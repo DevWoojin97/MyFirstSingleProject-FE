@@ -96,7 +96,8 @@ export default function CreatePost() {
             <input
               type="text"
               name="nickname"
-              placeholder="닉네임"
+              placeholder="닉네임 (최대 8자)"
+              maxLength={8} // 브라우저 수준에서 차단
               value={formData.nickname}
               onChange={handleChange}
               className={styles.smallInput}
@@ -117,7 +118,8 @@ export default function CreatePost() {
           <input
             type="text"
             name="title"
-            placeholder="제목을 입력하세요"
+            placeholder="제목을 입력하세요 (최대 50자)"
+            maxLength={50} // 브라우저 수준에서 차단
             value={formData.title}
             onChange={handleChange}
             className={styles.titleInput}
