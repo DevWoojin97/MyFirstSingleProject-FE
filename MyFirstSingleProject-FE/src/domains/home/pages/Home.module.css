@@ -178,7 +178,6 @@
   transform: translateY(0.5px);
 }
 .actualTitle {
-  flex: 1; /* 아이콘과 댓글수 사이의 남는 공간을 다 차지함 */
   white-space: nowrap; /* 줄바꿈 방지 */
   overflow: hidden; /* 넘치는 글자 숨김 */
   text-overflow: ellipsis; /* ... 표시 */
