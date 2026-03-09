@@ -133,6 +133,7 @@ export default function CommentSection({
             <input
               type="text"
               placeholder="닉네임"
+              maxLength={8} // 8자 이상 타이핑 방지
               value={commentInput.nickname}
               onChange={(e) =>
                 setCommentInput({ ...commentInput, nickname: e.target.value })
@@ -141,6 +142,7 @@ export default function CommentSection({
             />
             <input
               type="password"
+              maxLength={8}
               placeholder="비밀번호"
               value={commentInput.password}
               onChange={(e) =>
@@ -158,6 +160,7 @@ export default function CommentSection({
                 ? `${myNickname}님, 댓글을 남겨보세요!`
                 : '내용을 입력하세요'
             }
+            maxLength={300}
             value={commentInput.content}
             onChange={(e) =>
               setCommentInput({ ...commentInput, content: e.target.value })
