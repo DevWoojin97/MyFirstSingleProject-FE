@@ -26,6 +26,12 @@ export default function CommentSection({
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // 여기서 1차 유효성 검사
+    if (!commentInput.content || commentInput.content.trim() === '') {
+      toast.warn('댓글 내용을 입력해주세요.');
+      return; // onCommentSubmit 호출 자체를 막음
+    }
+
     const submitData = {
       content: commentInput.content,
       nickname: isLoggedIn ? myNickname : commentInput.nickname,
