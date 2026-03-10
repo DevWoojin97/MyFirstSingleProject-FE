@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getPosts } from '@/api/postApi';
 import api from '@/api/axios';
+import { useAsync } from '@/hooks/common/useAsync'; // 👈 import 확인!
 
 const DEBOUNCE_DELAY = 500;
 const LIMIT = 15;
@@ -13,10 +14,15 @@ export const useHome = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [totalCount, setTotalCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLongLoading, setIsLongLoading] = useState(false);
 
-  // 서버 깨우기 (Ping)
+  // 1. useAsync 사용 (이름을 isLoading으로 변경해서 받기)
+  const {
+    execute: fetchPosts,
+    loading: isLoading, // 👈 loading을 isLoading이라는 이름으로 사용
+    isLongLoading,
+  } = useAsync(getPosts, true);
+
+  // 서버 깨우기 (Ping) - 이 로직은 그대로 둡니다.
   useEffect(() => {
     const wakeUpServer = async () => {
       try {
@@ -30,39 +36,23 @@ export const useHome = () => {
 
   // 게시글 가져오기 (디바운스 포함)
   useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      const fetchPosts = async () => {
-        setIsLoading(true);
-        setIsLongLoading(false);
+    const debounceTimer = setTimeout(async () => {
+      // 2. fetchPosts는 이미 useAsync 내부에서 try-catch와 로딩 처리를 다 해줍니다.
+      const result = await fetchPosts({
+        search: searchTerm,
+        page: currentPage,
+        limit: LIMIT,
+      });
 
-        const longLoadingTimer = setTimeout(() => {
-          setIsLongLoading(true);
-        }, 5000);
-
-        try {
-          const result = await getPosts({
-            search: searchTerm,
-            page: currentPage,
-            limit: LIMIT,
-          });
-
-          const newPosts = result.posts || [];
-          setPosts(newPosts);
-          setTotalCount(result.totalCount || 0);
-          setTotalPages(result.totalPages || 1);
-        } catch (error) {
-          console.error('데이터 로딩 실패:', error);
-        } finally {
-          setIsLoading(false);
-          clearTimeout(longLoadingTimer);
-        }
-      };
-
-      fetchPosts();
+      if (result) {
+        setPosts(result.posts || []);
+        setTotalCount(result.totalCount || 0);
+        setTotalPages(result.totalPages || 1);
+      }
     }, DEBOUNCE_DELAY);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchTerm, currentPage]);
+  }, [searchTerm, currentPage, fetchPosts]);
 
   // 핸들러 함수
   const handleSearchChange = (e) => {
@@ -74,16 +64,16 @@ export const useHome = () => {
     setCurrentPage(page);
   };
 
-  // 컴포넌트에서 필요한 것들만 반환
   return {
     posts,
     currentPage,
     totalPages,
     searchTerm,
-    isLoading,
-    isLongLoading,
+    isLoading, // 👈 useAsync에서 온 값
+    isLongLoading, // 👈 useAsync에서 온 값
     handleSearchChange,
     handlePageChange,
-    navigate, // 테이블 클릭 시 사용
+    navigate,
+    totalCount, // 혹시 화면에 총 개수 표시하신다면 이것도 반환!
   };
 };
