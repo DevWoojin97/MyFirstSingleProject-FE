@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { getPostById, checkPostPassword, deletePost } from '@/api/postApi';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAsync } from '@/hooks/common/useAsync';
+import { useToggle } from '@/hooks/common/useToggle';
 
 export const usePost = (id) => {
   const navigate = useNavigate();
@@ -11,8 +12,8 @@ export const usePost = (id) => {
 
   const [post, setPost] = useState(null);
 
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const editModal = useToggle();
+  const deleteModal = useToggle();
 
   const { execute: fetchPostRequest, loading } = useAsync(getPostById);
   const { execute: checkPasswordRequest } = useAsync(checkPostPassword);
@@ -43,7 +44,7 @@ export const usePost = (id) => {
   const handleActualEdit = async (password) => {
     try {
       await checkPasswordRequest(id, password);
-      setIsEditModalOpen(false);
+      editModal.close();
       navigate(`/post/${id}/edit`, { state: { password } });
     } catch (error) {
       const errorMsg =
@@ -55,7 +56,7 @@ export const usePost = (id) => {
   const handleActualDelete = async (password = null) => {
     try {
       await deletePostRequest(id, password);
-      setIsDeleteModalOpen(false);
+      deleteModal.close();
       toast.success('성공적으로 삭제되었습니다.');
       navigate('/');
     } catch (error) {
@@ -71,17 +72,17 @@ export const usePost = (id) => {
     } else if (post?.authorId) {
       toast.warn('본인의 글만 수정할 수 있습니다. ✋');
     } else {
-      setIsEditModalOpen(true);
+      editModal.open();
     }
   };
 
   const handleDeleteClick = () => {
     if (isMyPost) {
-      setIsDeleteModalOpen(true);
+      deleteModal.open();
     } else if (post?.authorId) {
       toast.warn('본인의 글만 삭제할 수 있습니다. ✋');
     } else {
-      setIsDeleteModalOpen(true);
+      deleteModal.open();
     }
   };
 
@@ -89,10 +90,10 @@ export const usePost = (id) => {
     post,
     loading,
     isMyPost,
-    isEditModalOpen,
-    setIsEditModalOpen,
-    isDeleteModalOpen,
-    setIsDeleteModalOpen,
+    isEditModalOpen: editModal.isOpen,
+    setIsEditModalOpen: editModal.setIsOpen,
+    isDeleteModalOpen: deleteModal.isOpen,
+    setIsDeleteModalOpen: deleteModal.setIsOpen,
     handleGoToList,
     handleEditClick,
     handleDeleteClick,
