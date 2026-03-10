@@ -1,22 +1,28 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/contexts/AuthContext';
+import { useForm } from '@/hooks/common/useForm';
 
 export const useCommentSection = (onCommentSubmit, onCommentDelete) => {
   const { isLoggedIn, nickname: myNickname, userId: myId } = useAuth();
 
-  const [commentInput, setCommentInput] = useState({
+  // useForm 적용
+  const {
+    values: commentInput,
+    setDirectly: setInputDirectly,
+    reset,
+  } = useForm({
     nickname: '',
     password: '',
     content: '',
   });
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedCommentId, setSelectedCommentId] = useState(null);
   const [isDeletingMyComment, setIsDeletingMyComment] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!commentInput.content.trim()) {
       toast.warn('댓글 내용을 입력해주세요.');
       return;
@@ -29,7 +35,7 @@ export const useCommentSection = (onCommentSubmit, onCommentDelete) => {
     });
 
     if (success) {
-      setCommentInput({ nickname: '', password: '', content: '' });
+      reset(); // useForm의 리셋 기능 사용
     }
   };
 
@@ -53,11 +59,6 @@ export const useCommentSection = (onCommentSubmit, onCommentDelete) => {
     if (success) {
       setIsDeleteModalOpen(false);
     }
-  };
-
-  // 수동 업데이트용 (원래 코드 스타일 유지)
-  const setInputDirectly = (key, value) => {
-    setCommentInput((prev) => ({ ...prev, [key]: value }));
   };
 
   return {

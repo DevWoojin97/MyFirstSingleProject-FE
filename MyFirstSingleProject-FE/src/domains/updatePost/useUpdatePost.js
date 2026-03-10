@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getPostById, updatePost } from '@/api/postApi';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/contexts/AuthContext';
+import { useForm } from '@/hooks/common/useForm';
 
 export const useUpdatePost = () => {
   const { id } = useParams();
@@ -10,17 +11,21 @@ export const useUpdatePost = () => {
   const location = useLocation();
   const { isLoggedIn } = useAuth();
 
-  // 상세 페이지 모달에서 보낸 비밀번호 및 인증 정보
   const passwordFromState = location.state?.password;
   const isMember = location.state?.isMember || isLoggedIn;
 
-  const [formData, setFormData] = useState({
+  // useForm 적용
+  const {
+    values: formData,
+    setValues: setFormData,
+    handleChange,
+    setDirectly: handleContentChange,
+  } = useForm({
     title: '',
     content: '',
     nickname: '',
   });
 
-  // 1. 권한 체크: 인증 정보가 없으면 상세 페이지로 튕겨내기
   useEffect(() => {
     if (!isMember && !passwordFromState) {
       toast.warn('인증이 필요합니다.');
@@ -28,7 +33,6 @@ export const useUpdatePost = () => {
     }
   }, [isMember, passwordFromState, id, navigate]);
 
-  // 2. 초기 데이터 페칭: 수정할 게시글 정보 가져오기
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -39,34 +43,21 @@ export const useUpdatePost = () => {
           nickname: data.nickname || '',
         });
       } catch (err) {
-        toast.error(
-          err.response?.data?.message || '데이터를 불러오지 못했습니다.',
-        );
+        toast.error('데이터 로드 실패');
         navigate('/');
       }
     };
     fetchPost();
-  }, [id, navigate]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleContentChange = (newContent) => {
-    setFormData((prev) => ({ ...prev, content: newContent }));
-  };
+  }, [id, navigate, setFormData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await updatePost(id, passwordFromState, formData);
-      toast.success('수정이 완료되었습니다. ✨');
+      toast.success('수정 완료 ✨');
       navigate(`/post/${id}`);
     } catch (err) {
-      toast.error(
-        err.response?.data?.message || '수정 중 오류가 발생했습니다.',
-      );
+      toast.error('수정 실패');
     }
   };
 
