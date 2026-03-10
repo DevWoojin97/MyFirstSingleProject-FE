@@ -1,51 +1,23 @@
-import { getMyActivity, getMyComments, getMyPosts } from '@/api/userApi';
-import { useEffect, useState } from 'react';
 import styles from './Mypage.module.css';
 import { Link } from 'react-router-dom';
 import Pagination from '@/components/Pagination/Pagination';
+import { useMypage } from '@/hooks/useMypage'; // 훅 임포트
 
 export default function Mypage() {
-  const [activity, setActivity] = useState(null);
-  const [posts, setPosts] = useState([]); // 게시글 상태
-  const [postPage, setPostPage] = useState(1);
-  const [totalPostPages, setTotalPostPages] = useState(1);
-
-  const [comments, setComments] = useState([]); // 댓글 상태
-  const [commentPage, setCommentPage] = useState(1);
-  const [totalCommentPages, setTotalCommentPages] = useState(1);
-
-  const [activeTab, setActiveTab] = useState('posts'); // 현재 탭 상태. 기본값 게시글(작성글)
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchMyData = async () => {
-      try {
-        setLoading(true);
-        // 병렬로 두 API를 동시에 호출합니다.
-        const [activityData, postsData, commentsData] = await Promise.all([
-          getMyActivity(),
-          getMyPosts(postPage),
-          getMyComments(commentPage),
-        ]);
-        setActivity(activityData);
-
-        if (postsData) {
-          setPosts(postsData.posts || []);
-          setTotalPostPages(postsData.totalPages || 1);
-        }
-
-        if (commentsData) {
-          setComments(commentsData.comments || []);
-          setTotalCommentPages(commentsData.totalPages || 1);
-        }
-      } catch (error) {
-        console.error('데이터 로드 실패', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMyData();
-  }, [postPage, commentPage]);
+  const {
+    activity,
+    posts,
+    postPage,
+    totalPostPages,
+    comments,
+    commentPage,
+    totalCommentPages,
+    activeTab,
+    loading,
+    setPostPage,
+    setCommentPage,
+    setActiveTab,
+  } = useMypage();
 
   if (loading)
     return (
@@ -55,6 +27,7 @@ export default function Mypage() {
         <div className={styles.dot}></div>
       </div>
     );
+
   if (!activity)
     return <div className={styles.error}>데이터를 불러올 수 없습니다.</div>;
 
@@ -67,7 +40,7 @@ export default function Mypage() {
           🏠 메인으로
         </Link>
       </div>
-      {/* 디시인사이드 스타일 헤더 */}
+
       <section className={styles.header}>
         <div className={styles.profileBox}>
           <div className={styles.avatarWrapper}>
@@ -82,7 +55,6 @@ export default function Mypage() {
             <p className={styles.email}>{profile.email}</p>
           </div>
         </div>
-
         <div className={styles.stats}>
           <div className={styles.statItem}>
             <span className={styles.label}>게시글</span>
@@ -96,7 +68,6 @@ export default function Mypage() {
         </div>
       </section>
 
-      {/* 탭 네비게이션 */}
       <nav className={styles.tabs}>
         <button
           className={activeTab === 'posts' ? styles.activeTab : ''}
@@ -118,11 +89,9 @@ export default function Mypage() {
         </button>
       </nav>
 
-      {/* 리스트 영역: activeTab에 따라 다른 목록을 보여줌 */}
       <div className={styles.contentList}>
         {activeTab === 'posts' && (
           <>
-            {/* 1. 리스트 부분 */}
             {posts.length > 0 ? (
               <ul className={styles.postList}>
                 {posts.map((post) => (
@@ -158,7 +127,6 @@ export default function Mypage() {
             ) : (
               <p className={styles.emptyMsg}>작성한 게시글이 없습니다.</p>
             )}
-
             <Pagination
               currentPage={postPage}
               totalPages={totalPostPages}
@@ -166,9 +134,9 @@ export default function Mypage() {
             />
           </>
         )}
+
         {activeTab === 'comments' && (
           <>
-            {/* 1. 조건문은 반드시 중괄호 { } 안에 넣어야 합니다 */}
             {comments.length > 0 ? (
               <ul className={styles.postList}>
                 {comments.map((comment) => (
@@ -180,7 +148,7 @@ export default function Mypage() {
                           : '#'
                       }
                       className={styles.postLink}
-                      onClick={(e) => !comment.postId && e.preventDefault()} // 삭제된 글이면 클릭 방지
+                      onClick={(e) => !comment.postId && e.preventDefault()}
                     >
                       <div className={styles.postInfo}>
                         <div className={styles.commentContentWrapper}>
@@ -202,8 +170,6 @@ export default function Mypage() {
             ) : (
               <p className={styles.emptyMsg}>작성한 댓글이 없습니다.</p>
             )}
-
-            {/* 2. 댓글 전용 상태(commentPage, setCommentPage)로 변경 */}
             <Pagination
               currentPage={commentPage}
               totalPages={totalCommentPages}
