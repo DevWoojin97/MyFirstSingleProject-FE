@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/contexts/AuthContext';
 import { useForm } from '@/hooks/common/useForm';
+import { useToggle } from '@/hooks/common/useToggle';
 
 export const useCommentSection = (onCommentSubmit, onCommentDelete) => {
   const { isLoggedIn, nickname: myNickname, userId: myId } = useAuth();
@@ -17,7 +18,8 @@ export const useCommentSection = (onCommentSubmit, onCommentDelete) => {
     content: '',
   });
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const deleteModal = useToggle(false);
+
   const [selectedCommentId, setSelectedCommentId] = useState(null);
   const [isDeletingMyComment, setIsDeletingMyComment] = useState(false);
 
@@ -48,7 +50,7 @@ export const useCommentSection = (onCommentSubmit, onCommentDelete) => {
     if (isMyComment || isAnonymous) {
       setSelectedCommentId(commentId);
       setIsDeletingMyComment(isMyComment);
-      setIsDeleteModalOpen(true);
+      deleteModal.open();
     } else {
       toast.warn('본인의 댓글만 삭제할 수 있습니다.');
     }
@@ -57,7 +59,7 @@ export const useCommentSection = (onCommentSubmit, onCommentDelete) => {
   const handleConfirmDelete = async (password) => {
     const success = await onCommentDelete(selectedCommentId, password);
     if (success) {
-      setIsDeleteModalOpen(false);
+      deleteModal.close();
     }
   };
 
@@ -66,12 +68,12 @@ export const useCommentSection = (onCommentSubmit, onCommentDelete) => {
     myNickname,
     myId,
     commentInput,
-    isDeleteModalOpen,
+    isDeleteModalOpen: deleteModal.isOpen,
     isDeletingMyComment,
     handleSubmit,
     handleDeleteClick,
     handleConfirmDelete,
-    setIsDeleteModalOpen,
+    setIsDeleteModalOpen: deleteModal.setIsOpen,
     setInputDirectly,
   };
 };
