@@ -4,11 +4,11 @@ import CreatePost from './domains/createPost/CreatePost';
 import PostDetail from './domains/postDetail/PostDetail';
 import UpdatePost from './domains/updatePost/UpdatePost';
 import { ToastContainer } from 'react-toastify';
-import Signup from './domains/auth/Signup';
+import Signup from './domains/auth/Signup/Signup';
 import Mypage from './domains/mypage/Mypage';
-import Login from './domains/login/Login';
+import Login from './domains/auth/login/Login';
 import { AuthProvider } from './contexts/AuthContext';
-import LoginSuccess from './domains/auth/LoginSuccess';
+import LoginSuccess from './domains/auth/LoginSuccess/LoginSuccess';
 import { useInAppBrowserHandler } from './hooks/useInAppBrowserHandler';
 
 export default function App() {

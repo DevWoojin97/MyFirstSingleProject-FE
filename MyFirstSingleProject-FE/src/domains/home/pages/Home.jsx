@@ -3,7 +3,7 @@ import styles from './Home.module.css';
 import Pagination from '@/components/Pagination/Pagination';
 import VerifiedIcon from '@/components/Icons/VerifiedIcon';
 import clsx from 'clsx';
-import LoginSidebar from '@/domains/login/LoginSidebar';
+import LoginSidebar from '@/domains/auth/login/LoginSidebar';
 import Header from '@/components/Header/Header';
 import { FcGoogle } from 'react-icons/fc';
 import { useHome } from '@/hooks/useHome'; // 훅 임포트
