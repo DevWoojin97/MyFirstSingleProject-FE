@@ -14,23 +14,23 @@ export const useCommentSection = (onCommentSubmit, onCommentDelete) => {
   const [selectedCommentId, setSelectedCommentId] = useState(null);
   const [isDeletingMyComment, setIsDeletingMyComment] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!commentInput.content || commentInput.content.trim() === '') {
+    if (!commentInput.content.trim()) {
       toast.warn('댓글 내용을 입력해주세요.');
       return;
     }
 
-    const submitData = {
+    const success = await onCommentSubmit({
       content: commentInput.content,
       nickname: isLoggedIn ? myNickname : commentInput.nickname,
       password: isLoggedIn ? '' : commentInput.password,
-    };
-
-    onCommentSubmit(submitData, () => {
-      setCommentInput({ nickname: '', password: '', content: '' });
     });
+
+    if (success) {
+      setCommentInput({ nickname: '', password: '', content: '' });
+    }
   };
 
   const handleDeleteClick = (commentId, authorId) => {
@@ -52,14 +52,7 @@ export const useCommentSection = (onCommentSubmit, onCommentDelete) => {
     const success = await onCommentDelete(selectedCommentId, password);
     if (success) {
       setIsDeleteModalOpen(false);
-    } else {
-      toast.error('삭제에 실패했습니다. 비밀번호를 확인해주세요.');
     }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setCommentInput((prev) => ({ ...prev, [name]: value }));
   };
 
   // 수동 업데이트용 (원래 코드 스타일 유지)

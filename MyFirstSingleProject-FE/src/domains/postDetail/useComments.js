@@ -2,11 +2,11 @@ import { toast } from 'react-toastify';
 import { createComment, deleteComment } from '@/api/postApi';
 
 export const useComments = (id, fetchPost) => {
-  const handleCommentSubmit = async (commentData, successCallback) => {
+  const handleCommentSubmit = async (commentData) => {
     try {
       await createComment(id, commentData);
       toast.success('댓글이 등록되었습니다. 💬');
-      successCallback();
+      fetchPost();
       fetchPost();
     } catch (error) {
       const errorMsg = error.response?.data?.message || error.message || '실패';

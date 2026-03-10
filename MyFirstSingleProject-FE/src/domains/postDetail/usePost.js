@@ -1,17 +1,22 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getPostById, checkPostPassword, deletePost } from '@/api/postApi';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAsync } from '@/hooks/common/useAsync';
 
 export const usePost = (id) => {
   const navigate = useNavigate();
   const { userId, nickname, isLoggedIn } = useAuth();
 
   const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const { execute: fetchPostRequest, loading } = useAsync(getPostById);
+  const { execute: checkPasswordRequest } = useAsync(checkPostPassword);
+  const { execute: deletePostRequest } = useAsync(deletePost);
 
   const currentUser = isLoggedIn ? { id: userId, nickname } : null;
 
@@ -20,55 +25,24 @@ export const usePost = (id) => {
     currentUser?.id &&
     String(post.authorId) === String(currentUser.id);
 
-  const fetchPost = useCallback(async () => {
+  const fetchPost = async () => {
     try {
-      const data = await getPostById(id);
+      const data = await fetchPostRequest(id);
       setPost(data);
     } catch (error) {
-      console.error('데이터 로드 실패', error);
-    } finally {
-      setLoading(false);
+      console.error(error);
     }
-  }, [id]);
+  };
 
   useEffect(() => {
     fetchPost();
-  }, [fetchPost]);
+  }, [id]);
 
   const handleGoToList = () => navigate('/');
 
-  const handleEditClick = () => {
-    const loggedInId = localStorage.getItem('userId');
-    const postAuthorId = post?.authorId;
-    const isOwner =
-      loggedInId && postAuthorId && String(loggedInId) === String(postAuthorId);
-    if (isOwner) {
-      navigate(`/post/${id}/edit`, { state: { isMember: true } });
-    } else if (post?.authorId) {
-      toast.warn('본인의 글만 수정할 수 있습니다. ✋');
-    } else {
-      setIsEditModalOpen(true);
-    }
-  };
-
-  const handleDeleteClick = () => {
-    const loggedInId = localStorage.getItem('userId');
-    const postAuthorId = post?.authorId;
-    const isOwner =
-      loggedInId && postAuthorId && String(loggedInId) === String(postAuthorId);
-
-    if (isOwner) {
-      setIsDeleteModalOpen(true);
-    } else if (post?.authorId) {
-      toast.warn('본인의 글만 삭제할 수 있습니다. ✋');
-    } else {
-      setIsDeleteModalOpen(true);
-    }
-  };
-
   const handleActualEdit = async (password) => {
     try {
-      await checkPostPassword(id, password);
+      await checkPasswordRequest(id, password);
       setIsEditModalOpen(false);
       navigate(`/post/${id}/edit`, { state: { password } });
     } catch (error) {
@@ -80,7 +54,7 @@ export const usePost = (id) => {
 
   const handleActualDelete = async (password = null) => {
     try {
-      await deletePost(id, password);
+      await deletePostRequest(id, password);
       setIsDeleteModalOpen(false);
       toast.success('성공적으로 삭제되었습니다.');
       navigate('/');
@@ -88,6 +62,26 @@ export const usePost = (id) => {
       const errorMsg =
         error.response?.data?.message || error.message || '삭제 실패';
       toast.error(errorMsg);
+    }
+  };
+
+  const handleEditClick = () => {
+    if (isMyPost) {
+      navigate(`/post/${id}/edit`, { state: { isMember: true } });
+    } else if (post?.authorId) {
+      toast.warn('본인의 글만 수정할 수 있습니다. ✋');
+    } else {
+      setIsEditModalOpen(true);
+    }
+  };
+
+  const handleDeleteClick = () => {
+    if (isMyPost) {
+      setIsDeleteModalOpen(true);
+    } else if (post?.authorId) {
+      toast.warn('본인의 글만 삭제할 수 있습니다. ✋');
+    } else {
+      setIsDeleteModalOpen(true);
     }
   };
 
@@ -99,11 +93,11 @@ export const usePost = (id) => {
     setIsEditModalOpen,
     isDeleteModalOpen,
     setIsDeleteModalOpen,
-    fetchPost,
     handleGoToList,
     handleEditClick,
     handleDeleteClick,
     handleActualEdit,
     handleActualDelete,
+    fetchPost,
   };
 };

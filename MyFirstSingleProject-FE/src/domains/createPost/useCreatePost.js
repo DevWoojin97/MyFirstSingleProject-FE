@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { createPost } from '@/api/postApi';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAsync } from '@/hooks/useAsync';
+import { useAsync } from '@/hooks/common/useAsync';
 
 export const useCreatePost = () => {
   const { isLoggedIn, nickname: loggedInNickname } = useAuth();
