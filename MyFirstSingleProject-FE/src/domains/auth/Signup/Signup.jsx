@@ -1,6 +1,6 @@
 import styles from './Signup.module.css';
 import { FcGoogle } from 'react-icons/fc';
-import { useSignup } from '@/hooks/useSignup';
+import { useSignup } from '@/domains/auth/Signup/useSignup';
 
 function Signup() {
   const {

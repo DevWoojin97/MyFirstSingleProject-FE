@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import LoginSidebar from '@/domains/auth/login/LoginSidebar';
 import Header from '@/components/Header/Header';
 import { FcGoogle } from 'react-icons/fc';
-import { useHome } from '@/hooks/useHome'; // 훅 임포트
+import { useHome } from '@/domains/home/pages/useHome'; // 훅 임포트
 
 const Home = () => {
   // 훅에서 모든 로직과 상태를 가져옵니다.

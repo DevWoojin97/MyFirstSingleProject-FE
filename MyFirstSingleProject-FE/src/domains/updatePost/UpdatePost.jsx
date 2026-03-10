@@ -1,6 +1,6 @@
 import styles from './UpdatePost.module.css';
 import PostEditor from '@/components/PostEditor/PostEditor';
-import { useUpdatePost } from '@/hooks/useUpdatePost';
+import { useUpdatePost } from '@/domains/updatePost/useUpdatePost';
 
 export default function UpdatePost() {
   const {

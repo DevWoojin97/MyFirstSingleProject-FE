@@ -6,8 +6,8 @@ import VerifiedIcon from '@/components/Icons/VerifiedIcon';
 import PasswordModal from '@/components/PasswordModal/PasswordModal';
 import { FcGoogle } from 'react-icons/fc';
 import clsx from 'clsx';
-import { usePost } from '@/hooks/usePost';
-import { useComments } from '@/hooks/useComments';
+import { usePost } from '@/domains/postDetail/usePost';
+import { useComments } from '@/domains/postDetail/useComments';
 
 export default function PostDetail() {
   const { id } = useParams();

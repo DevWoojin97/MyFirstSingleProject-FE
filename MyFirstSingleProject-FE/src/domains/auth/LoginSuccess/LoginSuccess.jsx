@@ -1,5 +1,5 @@
 import styles from './LoginSuccess.module.css';
-import { useLoginSuccess } from '@/hooks/useLoginSuccess';
+import { useLoginSuccess } from '@/domains/auth/LoginSuccess/useLoginSuccess';
 
 function LoginSuccess() {
   useLoginSuccess(); // 로직 실행

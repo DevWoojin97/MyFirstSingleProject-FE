@@ -1,6 +1,6 @@
 import styles from './Login.module.css';
 import { FcGoogle } from 'react-icons/fc';
-import { useLogin } from '@/hooks/useLogin';
+import { useLogin } from '@/domains/auth/login/useLogin';
 
 function Login() {
   const {

@@ -9,7 +9,7 @@ import Mypage from './domains/mypage/Mypage';
 import Login from './domains/auth/login/Login';
 import { AuthProvider } from './contexts/AuthContext';
 import LoginSuccess from './domains/auth/LoginSuccess/LoginSuccess';
-import { useInAppBrowserHandler } from './hooks/useInAppBrowserHandler';
+import { useInAppBrowserHandler } from './hooks/common/useInAppBrowserHandler';
 
 export default function App() {
   useInAppBrowserHandler();

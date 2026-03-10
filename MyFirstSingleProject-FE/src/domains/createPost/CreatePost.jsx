@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import styles from './CreatePost.module.css';
 import PostEditor from '@/components/PostEditor/PostEditor';
-import { useCreatePost } from '@/hooks/useCreatePost';
+import { useCreatePost } from '@/domains/createPost/useCreatePost';
 
 export default function CreatePost() {
   const navigate = useNavigate();

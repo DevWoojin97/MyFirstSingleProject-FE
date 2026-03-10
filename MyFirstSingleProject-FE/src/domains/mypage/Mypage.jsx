@@ -1,7 +1,7 @@
 import styles from './Mypage.module.css';
 import { Link } from 'react-router-dom';
 import Pagination from '@/components/Pagination/Pagination';
-import { useMypage } from '@/hooks/useMypage'; // 훅 임포트
+import { useMypage } from '@/domains/mypage/useMypage'; // 훅 임포트
 
 export default function Mypage() {
   const {
