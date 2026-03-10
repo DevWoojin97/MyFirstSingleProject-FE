@@ -1,74 +1,28 @@
-import { useState } from 'react';
 import styles from './CommentSection.module.css';
 import PasswordModal from '../PasswordModal/PasswordModal';
-import { toast } from 'react-toastify';
 import VerifiedIcon from '../Icons/VerifiedIcon';
 import clsx from 'clsx';
-import { useAuth } from '@/contexts/AuthContext';
 import { FcGoogle } from 'react-icons/fc';
+import { useCommentSection } from './useCommentSection';
 
 export default function CommentSection({
   comments,
   onCommentSubmit,
   onCommentDelete,
 }) {
-  const { isLoggedIn, nickname: myNickname, userId: myId } = useAuth();
-
-  const [commentInput, setCommentInput] = useState({
-    nickname: '',
-    password: '',
-    content: '',
-  });
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedCommentId, setSelectedCommentId] = useState(null);
-  const [isDeletingMyComment, setIsDeletingMyComment] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // 여기서 1차 유효성 검사
-    if (!commentInput.content || commentInput.content.trim() === '') {
-      toast.warn('댓글 내용을 입력해주세요.');
-      return; // onCommentSubmit 호출 자체를 막음
-    }
-
-    const submitData = {
-      content: commentInput.content,
-      nickname: isLoggedIn ? myNickname : commentInput.nickname,
-      password: isLoggedIn ? '' : commentInput.password,
-    };
-
-    onCommentSubmit(submitData, () => {
-      setCommentInput({ nickname: '', password: '', content: '' }); // 성공 시 초기화 콜백
-    });
-  };
-
-  const handleDeleteClick = (commentId, authorId) => {
-    // 2. 비교 로직 (String으로 변환하여 타입 불일치 방지)
-    // authorId가 존재하고, 내 ID와 일치할 때만 true
-    const isMyComment =
-      isLoggedIn && authorId && String(myId) === String(authorId);
-
-    // 3. 익명 여부 판별 (authorId가 아예 없는 경우)
-    const isAnonymous = !authorId;
-
-    if (isMyComment || isAnonymous) {
-      setSelectedCommentId(commentId);
-      setIsDeletingMyComment(isMyComment); // ✅ 여기서 true가 되어야 비번창이 안 뜸
-      setIsDeleteModalOpen(true);
-    } else {
-      toast.warn('본인의 댓글만 삭제할 수 있습니다.');
-    }
-  };
-
-  const handleConfirmDelete = async (password) => {
-    const success = await onCommentDelete(selectedCommentId, password);
-    if (success) {
-      setIsDeleteModalOpen(false);
-    } else {
-      toast.error('삭제에 실패했습니다. 비밀번호를 확인해주세요.');
-    }
-  };
+  const {
+    isLoggedIn,
+    myNickname,
+    myId,
+    commentInput,
+    isDeleteModalOpen,
+    isDeletingMyComment,
+    handleSubmit,
+    handleDeleteClick,
+    handleConfirmDelete,
+    setIsDeleteModalOpen,
+    setInputDirectly,
+  } = useCommentSection(onCommentSubmit, onCommentDelete);
 
   return (
     <section className={styles.commentSection}>
@@ -77,7 +31,7 @@ export default function CommentSection({
       {/* 댓글 목록 */}
       <div className={styles.commentList}>
         {comments && comments.length > 0 ? (
-          comments?.map((comment) => {
+          comments.map((comment) => {
             const isMyComment =
               isLoggedIn &&
               comment.authorId &&
@@ -139,11 +93,9 @@ export default function CommentSection({
             <input
               type="text"
               placeholder="닉네임"
-              maxLength={8} // 8자 이상 타이핑 방지
+              maxLength={8}
               value={commentInput.nickname}
-              onChange={(e) =>
-                setCommentInput({ ...commentInput, nickname: e.target.value })
-              }
+              onChange={(e) => setInputDirectly('nickname', e.target.value)}
               className={styles.commentInput}
             />
             <input
@@ -151,9 +103,7 @@ export default function CommentSection({
               maxLength={8}
               placeholder="비밀번호"
               value={commentInput.password}
-              onChange={(e) =>
-                setCommentInput({ ...commentInput, password: e.target.value })
-              }
+              onChange={(e) => setInputDirectly('password', e.target.value)}
               className={styles.commentInput}
             />
           </div>
@@ -168,9 +118,7 @@ export default function CommentSection({
             }
             maxLength={300}
             value={commentInput.content}
-            onChange={(e) =>
-              setCommentInput({ ...commentInput, content: e.target.value })
-            }
+            onChange={(e) => setInputDirectly('content', e.target.value)}
             className={styles.commentTextarea}
           />
           <button type="submit" className={styles.commentSubmitBtn}>
@@ -182,7 +130,7 @@ export default function CommentSection({
       <PasswordModal
         isOpen={isDeleteModalOpen}
         title={
-          isDeletingMyComment ? '댓글을 삭제하시겠습니가?' : '비밀번호 확인'
+          isDeletingMyComment ? '댓글을 삭제하시겠습니까?' : '비밀번호 확인'
         }
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
