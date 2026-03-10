@@ -2,36 +2,82 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 2px;
-  margin: 20px 0;
+  margin: 30px 0;
+  font-family: 'dotum', sans-serif; /* 커뮤니티 특유의 깔끔한 폰트 느낌 */
 }
 
+/* 숫자 버튼들 */
 .pageBtn {
   border: none;
   background: none;
   color: #333;
   font-size: 13px;
   cursor: pointer;
-  padding: 0 4px;
+  padding: 0 8px;
+  position: relative;
+  transition: color 0.2s;
 }
 
+/* 숫자 사이의 세로 구분선 (|) */
+.pageBtn:not(:last-of-type)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 10px;
+  background-color: #e0e0e0;
+}
+
+/* 호버 시 효과 */
+.pageBtn:hover {
+  text-decoration: underline;
+  color: #29367c; /* 디시 메인 블루 톤 */
+}
+
+/* 활성화된 페이지 (현재 페이지) */
 .active {
-  color: #ff3300 !important; /* 디시 포인트 컬러 */
+  color: #ff3300 !important; /* 디시 강조 레드 */
   font-weight: bold;
+}
+
+.active strong {
   text-decoration: underline;
 }
 
+/* 화살표 버튼 (이전/다음) */
 .arrowBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   border: 1px solid #ccc;
   background-color: #fff;
   color: #666;
-  font-size: 11px;
-  padding: 1px 4px;
-  margin: 0 5px;
+  font-size: 10px;
+  margin: 0 4px;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
+.arrowBtn:hover:not(:disabled) {
+  border-color: #29367c;
+  color: #29367c;
+}
+
+/* 비활성화된 화살표 */
 .arrowBtn:disabled {
-  color: #ddd;
-  border-color: #eee;
+  color: #eee;
+  border-color: #f2f2f2;
+  cursor: default;
+}
+
+/* 양 끝 화살표 스타일링 (처음/끝 버튼 추가 고려용) */
+.arrowBtn:first-of-type {
+  margin-right: 10px;
+}
+.arrowBtn:last-of-type {
+  margin-left: 10px;
 }
