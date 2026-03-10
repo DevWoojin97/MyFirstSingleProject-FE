@@ -1,91 +1,26 @@
-import { getPosts } from '@/api/postApi';
-import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styles from './Home.module.css';
 import Pagination from '@/components/Pagination/Pagination';
 import VerifiedIcon from '@/components/Icons/VerifiedIcon';
 import clsx from 'clsx';
 import LoginSidebar from '@/domains/login/LoginSidebar';
 import Header from '@/components/Header/Header';
-import api from '@/api/axios';
 import { FcGoogle } from 'react-icons/fc';
-
-const DEBOUNCE_DELAY = 500; // 사용자가 입력을 멈추고 0.5초 뒤에 실행
-const LIMIT = 15; // 한 페이지에 보여줄 게시글 수
+import { useHome } from '@/hooks/useHome'; // 훅 임포트
 
 const Home = () => {
-  const navigate = useNavigate();
-  const [posts, setPosts] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [searchTerm, setSearchTerm] = useState(''); // 입력 필드 및 검색어 상태
-  const [totalCount, setTotalCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(true); // 처음엔 로딩 중!
-  const [isLongLoading, setIsLongLoading] = useState(false); // 📍 추가: 5초 이상 걸리는지 체크
-
-  // Home.jsx
-
-  useEffect(() => {
-    // 컴포넌트가 마운트될 때 (사용자가 사이트 들어오자마자) 딱 한 번 실행
-    const wakeUpServer = async () => {
-      try {
-        // /api/ping 엔드포인트가 있다고 가정
-        await api.get('/posts/ping');
-      } catch (error) {
-        // 핑은 실패해도 괜찮습니다. 깨우는 게 목적이니까요.
-        console.log('💤 서버가 아직 자고 있거나 깨어나는 중입니다.', error);
-      }
-    };
-
-    wakeUpServer();
-  }, []); // 빈 배열: 처음에 딱 한 번만!
-
-  useEffect(() => {
-    // 1. 디바운스 타이머 설정: API 호출 횟수를 줄여 서버 부하 방지
-    const debounceTimer = setTimeout(() => {
-      const fetchPosts = async () => {
-        setIsLoading(true); // 로딩 시작
-        setIsLongLoading(false); // 로딩 시작 시 초기화
-
-        // 📍 추가: 5초가 지나도 로딩 중이면 isLongLoading을 true로!
-        const longLoadingTimer = setTimeout(() => {
-          setIsLongLoading(true);
-        }, 5000);
-
-        try {
-          const result = await getPosts({
-            search: searchTerm,
-            page: currentPage,
-            limit: LIMIT,
-          });
-
-          // 백엔드 응답 구조에 맞춰 데이터 세팅
-          const newPosts = result.posts || [];
-          setPosts(newPosts);
-
-          // 페이지네이션을 위한 메타 정보 세팅
-          setTotalCount(result.totalCount || 0);
-          setTotalPages(result.totalPages || 1);
-        } catch (error) {
-          console.error('데이터 로딩 실패:', error);
-        } finally {
-          setIsLoading(false); // 성공이든 실패든 로딩 off
-          clearTimeout(longLoadingTimer); // 데이터 오면 타임 해제
-        }
-      };
-
-      fetchPosts();
-    }, DEBOUNCE_DELAY);
-
-    // 2. 타이머 클린업: 다음 입력이 들어오면 이전 타이머를 취소함
-    return () => clearTimeout(debounceTimer);
-  }, [searchTerm, currentPage]); // 검색어 혹은 페이지 번호 변경 시 실행
-
-  // 검색어 입력 시 페이지를 1페이지로 리셋하는 핸들러
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
+  // 훅에서 모든 로직과 상태를 가져옵니다.
+  const {
+    posts,
+    currentPage,
+    totalPages,
+    searchTerm,
+    isLoading,
+    isLongLoading,
+    handleSearchChange,
+    handlePageChange,
+    navigate,
+  } = useHome();
 
   return (
     <div className={styles.container}>
@@ -93,7 +28,6 @@ const Home = () => {
 
       <div className={styles.mainWrapper}>
         <section className={styles.contentSection}>
-          {/* 게시글 테이블 영역 */}
           <table className={styles.table}>
             <thead>
               <tr>
@@ -106,7 +40,6 @@ const Home = () => {
             </thead>
             <tbody>
               {isLoading ? (
-                /* 1. 로딩 중일 때 표시할 UI */
                 <tr>
                   <td colSpan="5" className={styles.loadingTd}>
                     <div className={styles.spinnerBox}>
@@ -123,7 +56,6 @@ const Home = () => {
                   </td>
                 </tr>
               ) : posts.length > 0 ? (
-                /* 2. 로딩이 끝났고 데이터가 있을 때 */
                 posts.map((post) => (
                   <tr
                     key={post.id}
@@ -157,7 +89,6 @@ const Home = () => {
                         <span className={styles.nicknameText}>
                           {post.nickname}
                         </span>
-
                         {post.authorId && (
                           <>
                             {post.author?.provider === 'GOOGLE' ? (
@@ -186,7 +117,6 @@ const Home = () => {
                   </tr>
                 ))
               ) : (
-                /* 3. 로딩이 끝났는데 데이터가 진짜 없을 때 */
                 <tr>
                   <td colSpan="5" className={styles.noData}>
                     검색 결과나 게시글이 없습니다.
@@ -196,28 +126,24 @@ const Home = () => {
             </tbody>
           </table>
 
-          {/* 글쓰기 버튼 영역 */}
           <div className={styles.buttonWrapper}>
             <Link to={'/post/new'}>
               <button className={styles.writeBtn}>글쓰기</button>
             </Link>
           </div>
 
-          {/* 페이지네이션 컴포넌트 */}
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={(page) => setCurrentPage(page)}
+            onPageChange={handlePageChange}
           />
         </section>
 
-        {/* 우측 사이드바 영역 추가 */}
         <aside className={styles.sidebar}>
           <LoginSidebar />
         </aside>
       </div>
 
-      {/* 검색 바 영역 */}
       <div className={styles.searchWrapper}>
         <input
           type="text"

@@ -1,87 +1,18 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './CreatePost.module.css';
-import { createPost } from '@/api/postApi';
-import { toast } from 'react-toastify'; // alert 대신 toast 사용
 import PostEditor from '@/components/PostEditor/PostEditor';
-import { useAuth } from '@/contexts/AuthContext';
+import { useCreatePost } from '@/hooks/useCreatePost';
 
 export default function CreatePost() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const { isLoggedIn, nickname: loggedInNickname } = useAuth();
-
-  const [formData, setFormData] = useState({
-    title: '',
-    nickname: isLoggedIn ? loggedInNickname : '',
-    password: '',
-    content: '',
-  });
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      setFormData((prev) => ({ ...prev, nickname: loggedInNickname }));
-    }
-  }, [isLoggedIn, loggedInNickname]);
-
-  // 일반 input 변경 핸들러
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-  // 2. 에디터 전용 변경 핸들러 (PostEditor에서 호출됨)
-  const handleContentChange = (value) => {
-    setFormData((prev) => ({
-      ...prev,
-      content: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // 비회원일 때만 닉네임/비밀번호 검사
-    if (!isLoggedIn) {
-      if (!formData.nickname.trim())
-        return toast.warn('닉네임을 입력해주세요! 👤');
-      if (!formData.password) return toast.warn('비밀번호를 입력해주세요! 🔒');
-
-      const pwLength = formData.password.length;
-      if (pwLength < 4 || pwLength > 8) {
-        return toast.warn('비밀번호는 4자에서 8자 사이여야 합니다!');
-      }
-    }
-
-    if (!formData.title.trim()) return toast.warn('제목을 입력해주세요! ✍️');
-
-    const isContentEmpty =
-      !formData.content ||
-      formData.content.replace(/<(.|\n)*?>/g, '').trim().length === 0;
-
-    if (isContentEmpty) {
-      return toast.warn('내용을 입력해주세요! 📝');
-    }
-
-    setIsLoading(true);
-    try {
-      const submitData = isLoggedIn ? { ...formData, password: '' } : formData;
-
-      await createPost(submitData);
-      toast.success('게시글이 등록되었습니다. ✨');
-      navigate('/');
-    } catch (error) {
-      console.error('등록 실패:', error);
-      const errorMsg =
-        error.response?.data?.message || '서버 오류로 등록에 실패했습니다.';
-      toast.error(errorMsg);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    formData,
+    isLoading,
+    isLoggedIn,
+    handleChange,
+    handleContentChange,
+    handleSubmit,
+  } = useCreatePost();
 
   return (
     <div className={styles.container}>

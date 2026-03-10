@@ -1,187 +1,56 @@
-import {
-  deletePost,
-  getPostById,
-  updatePost,
-  createComment,
-  checkPostPassword,
-  deleteComment,
-} from '@/api/postApi';
-import PasswordModal from '@/components/PasswordModal/PasswordModal';
-import { useCallback, useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { useParams, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import styles from './PostDetail.module.css';
 import CommentSection from '@/components/Comment/CommentSection';
 import VerifiedIcon from '@/components/Icons/VerifiedIcon';
+import PasswordModal from '@/components/PasswordModal/PasswordModal';
 import { FcGoogle } from 'react-icons/fc';
 import clsx from 'clsx';
-import { useAuth } from '@/contexts/AuthContext';
+import { usePost } from '@/hooks/usePost';
+import { useComments } from '@/hooks/useComments';
 
 export default function PostDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const { userId, nickname, isLoggedIn } = useAuth();
   const { hash } = useLocation();
 
-  const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  // 1. 게시글 관련 훅
+  const {
+    post,
+    loading,
+    isMyPost,
+    isEditModalOpen,
+    setIsEditModalOpen,
+    isDeleteModalOpen,
+    setIsDeleteModalOpen,
+    fetchPost,
+    handleGoToList,
+    handleEditClick,
+    handleDeleteClick,
+    handleActualEdit,
+    handleActualDelete,
+  } = usePost(id);
 
-  const currentUser = isLoggedIn ? { id: userId, nickname } : null;
+  // 2. 댓글 관련 훅 (게시글 갱신 함수를 넘겨줍니다)
+  const { handleCommentSubmit, handleDeleteComment } = useComments(
+    id,
+    fetchPost,
+  );
 
-  const isMyPost =
-    post?.authorId &&
-    currentUser?.id &&
-    String(post.authorId) === String(currentUser.id);
-
-  const fetchPost = useCallback(async () => {
-    try {
-      const data = await getPostById(id);
-      setPost(data);
-    } catch (error) {
-      console.error('데이터 로드 실패', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
-
+  // 스크롤 로직 (UI 렌더링과 밀접하므로 유지)
   useEffect(() => {
-    fetchPost();
-  }, [fetchPost]);
-
-  // 🌟 추가된 스크롤 로직: 해시(#)가 있을 때 해당 댓글로 이동
-  useEffect(() => {
-    // 1. URL에 해시(#comment-xxx)가 있고, 게시글 데이터(post)가 로딩 완료된 경우 실행
     if (hash && !loading && post) {
-      const elementId = hash.replace('#', ''); // '#comment-12' -> 'comment-12'
-
-      // 2. DOM에 댓글 요소가 렌더링될 때까지 아주 잠깐 대기 (setTimeout)
+      const elementId = hash.replace('#', '');
       const timer = setTimeout(() => {
         const element = document.getElementById(elementId);
         if (element) {
-          // 3. 해당 위치로 부드럽게 스크롤 이동
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-          // 4. (선택사항) 강조 효과를 위한 클래스 추가
           element.classList.add(styles.highlight);
-
-          // 5초 뒤 강조 효과 제거
-          setTimeout(() => {
-            element.classList.remove(styles.highlight);
-          }, 2000);
+          setTimeout(() => element.classList.remove(styles.highlight), 2000);
         }
-      }, 300); // 렌더링 속도에 따라 300~500ms가 적당합니다.
-
+      }, 300);
       return () => clearTimeout(timer);
     }
-  }, [hash, loading, post]); // 해시나 로딩 상태가 변할 때 감시
-
-  // 핸들러들
-  const handleGoToList = () => navigate('/');
-
-  const handleEditClick = () => {
-    const loggedInId = localStorage.getItem('userId'); // 로그인 시 저장한 내 ID
-    const postAuthorId = post?.authorId; // DB에서 가져온 글쓴이 ID
-    // 둘 다 존재하고 값이 같으면 내 글!
-    const isOwner =
-      loggedInId && postAuthorId && String(loggedInId) === String(postAuthorId);
-    if (isOwner) {
-      // ✅ 내 글이면 모달 없이 즉시 이동
-      // state에 isMember를 실어 보내면 수정 페이지에서 '비밀번호' 칸을 숨기기 편합니다.
-      navigate(`/post/${id}/edit`, { state: { isMember: true } });
-    } else if (post?.authorId) {
-      // ❌ 남의 회원 글이면
-      toast.warn('본인의 글만 수정할 수 있습니다. ✋');
-    } else {
-      // 👤 익명 글이면 비밀번호 모달 오픈
-      setIsEditModalOpen(true);
-    }
-  };
-  const handleDeleteClick = () => {
-    const loggedInId = localStorage.getItem('userId'); // 로그인 시 저장한 내 ID
-    const postAuthorId = post?.authorId; // DB에서 가져온 글쓴이 ID
-
-    // 둘 다 존재하고 값이 같으면 내 글!
-    const isOwner =
-      loggedInId && postAuthorId && String(loggedInId) === String(postAuthorId);
-
-    if (isOwner) {
-      setIsDeleteModalOpen(true);
-    } else if (post?.authorId) {
-      // 💡 회원 글인데 내가 주인이 아니면 모달을 띄울 필요가 없음!
-      toast.warn('본인의 글만 삭제할 수 있습니다. ✋');
-    } else {
-      // 익명 글이거나 남의 글이면 모달(비밀번호 입력) 띄우기
-      setIsDeleteModalOpen(true);
-    }
-  };
-
-  const handleActualEdit = async (password) => {
-    try {
-      await checkPostPassword(id, password);
-      setIsEditModalOpen(false);
-      navigate(`/post/${id}/edit`, { state: { password } });
-    } catch (error) {
-      // 서버에서 보낸 메시지가 있으면 그걸 쓰고, 없으면 기본 메시지 출력
-      const errorMsg =
-        error.response?.data?.message ||
-        error.message ||
-        '비밀번호가 일치하지 않거나 오류가 발생했습니다. 🙅';
-      toast.error(errorMsg);
-      console.error('Edit Auth Error:', error);
-    }
-  };
-
-  const handleActualDelete = async (password = null) => {
-    try {
-      await deletePost(id, password);
-      setIsDeleteModalOpen(false);
-      toast.success('성공적으로 삭제되었습니다.');
-      navigate('/');
-    } catch (error) {
-      const errorMsg =
-        error.response?.data?.message ||
-        error.message ||
-        '삭제 중 오류가 발생했습니다.';
-      toast.error(errorMsg);
-      console.error('Delete Error:', error);
-    }
-  };
-
-  // 댓글 등록 로직만 부모에서 관리 (데이터 갱신을 위해)
-  const handleCommentSubmit = async (commentData, successCallback) => {
-    try {
-      await createComment(id, commentData);
-      toast.success('댓글이 등록되었습니다. 💬');
-      successCallback(); // 입력창 비우기
-      fetchPost(); // 목록 새로고침
-    } catch (error) {
-      const errorMsg =
-        error.response?.data?.message ||
-        error.message ||
-        '댓글 등록에 실패했습니다.';
-      toast.error(errorMsg);
-      console.error('Comment Post Error:', error);
-    }
-  };
-
-  const handleDeleteComment = async (commentId, password) => {
-    try {
-      await deleteComment(commentId, password);
-      toast.success('댓글이 삭제되었습니다. 🗑️');
-      fetchPost(); // 댓글 목록 갱신을 위해 데이터 다시 불러오기
-      return true;
-    } catch (error) {
-      const errorMsg =
-        error.response?.data?.message ||
-        error.message ||
-        '비밀번호가 일치하지 않습니다.';
-      toast.error(errorMsg);
-      console.error('Comment Delete Error:', error);
-      return false; // 실패 시 false 반환
-    }
-  };
+  }, [hash, loading, post]);
 
   if (loading)
     return (
@@ -204,24 +73,16 @@ export default function PostDetail() {
               className={clsx(styles.nickname, post.authorId && styles.isFixed)}
             >
               {post.nickname}
-              {post.authorId && (
-                <>
-                  {post.author?.provider === 'GOOGLE' ? (
-                    /* 1. 구글 회원인 경우: 구글 로고만! */
-                    <span
-                      className={styles.googleBadge}
-                      title="구글 로그인 회원"
-                    >
-                      <FcGoogle size={13} />
-                    </span>
-                  ) : (
-                    /* 2. 구글이 아닌 일반 회원인 경우: 체크 마크만! */
-                    <span className={styles.fixedBadge} title="인증 회원">
-                      <VerifiedIcon />
-                    </span>
-                  )}
-                </>
-              )}
+              {post.authorId &&
+                (post.author?.provider === 'GOOGLE' ? (
+                  <span className={styles.googleBadge} title="구글 회원">
+                    <FcGoogle size={13} />
+                  </span>
+                ) : (
+                  <span className={styles.fixedBadge} title="인증 회원">
+                    <VerifiedIcon />
+                  </span>
+                ))}
             </span>
             <span className={styles.date}>
               {new Date(post.createdAt).toLocaleString()}
@@ -238,7 +99,6 @@ export default function PostDetail() {
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
 
-      {/* 분리한 댓글 섹션 */}
       <CommentSection
         comments={post.comments}
         onCommentSubmit={handleCommentSubmit}
@@ -252,8 +112,7 @@ export default function PostDetail() {
           </button>
         </div>
         <div className={styles.btnRight}>
-          {/* 본인 글이거나 익명 글일 때만 수정/삭제 버튼 노출 (남의 회원글이면 숨김) */}
-          {(isMyPost || !post.userId) && (
+          {(isMyPost || !post.authorId) && (
             <>
               <button onClick={handleEditClick} className={styles.btnBlue}>
                 수정
@@ -274,7 +133,6 @@ export default function PostDetail() {
       />
       <PasswordModal
         isOpen={isDeleteModalOpen}
-        // ✅ 내 글(회원)이면 비번 입력창 숨기고, 익명글이면 보여줌
         isPasswordRequired={!isMyPost}
         title={isMyPost ? '정말 삭제하시겠습니까?' : '게시글 삭제 비밀번호'}
         onClose={() => setIsDeleteModalOpen(false)}
